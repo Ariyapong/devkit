@@ -93,3 +93,10 @@ test("parseUrl hostUnicode agrees with node:url.domainToUnicode on a ten-host ta
     assert.equal(parseUrl(url)?.hostUnicode, expected, url);
   }
 });
+
+test("parseUrl never throws on an undecodable xn-- label in a non-special scheme", () => {
+  const parts = parseUrl("git://xn--0/");
+  assert.ok(parts);
+  assert.equal(parts.hostUnicode, undefined);
+  assert.equal(parseUrl("https://xn--a.com/"), null); // special scheme: WHATWG rejects it first
+});

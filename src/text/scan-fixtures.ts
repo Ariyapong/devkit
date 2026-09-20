@@ -15,8 +15,9 @@ export const fixtures: FixtureTable = {
   formatNumber: { returns: [[1234.5]], throws: [[Infinity]] },
   renderConversion: { returns: [["length", "m", "km", 1000]], throws: [["nope", "m", "km", 1]] },
 
-  // ---- urltools ---- (returns null on bad input; never throws — confirmed
-  // by reading parseUrl, which only ever returns UrlParts | null)
+  // ---- urltools ---- (never throws: a rejected `new URL(...)` returns null
+  // rather than throwing out of parseUrl, and an undecodable xn-- label from
+  // toUnicode is caught internally — hostUnicode is left absent, not thrown)
   parseUrl: { returns: [["https://a.example/x"]], throws: "never" },
 
   // ---- casetools ---- (tokenizeWords throws when no word-like run survives
