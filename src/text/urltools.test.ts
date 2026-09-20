@@ -103,5 +103,8 @@ test("parseUrl never throws on an undecodable xn-- label in a non-special scheme
   const parts = parseUrl("git://xn--0/");
   assert.ok(parts);
   assert.equal(parts.hostUnicode, undefined);
-  assert.equal(parseUrl("https://xn--a.com/"), null); // special scheme: WHATWG rejects it first
+  // Under a special scheme the outcome depends on the Node version's URL
+  // parser (Node 22 rejects the label ⇒ null; Node 24 accepts it) — the
+  // contract pinned here is only that parseUrl never throws.
+  assert.doesNotThrow(() => parseUrl("https://xn--a.com/"));
 });
