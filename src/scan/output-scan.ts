@@ -22,6 +22,16 @@ export function findForbidden(text: string): string | null {
   return null;
 }
 
+/**
+ * JSON.stringify with a bigint replacer. Assertion messages below are
+ * built eagerly — JS evaluates every call argument before dispatch, so a
+ * bigint-typed export's args would throw "Do not know how to serialize a
+ * BigInt" even on the passing path, before assert ever inspects the message.
+ */
+function stringifyArgs(args: unknown[]): string {
+  return JSON.stringify(args, (_key, value) => (typeof value === "bigint" ? `${value}n` : value));
+}
+
 export function collectStrings(value: unknown, out: string[] = [], depth = 0): string[] {
   if (depth > 8) return out;
   if (typeof value === "string") out.push(value);
@@ -50,11 +60,11 @@ export function registerOutputScan(domain: string, mod: Record<string, unknown>,
         try {
           out = call(...args);
         } catch (error) {
-          assert.fail(`${name}${JSON.stringify(args)} was tagged "returns" but threw: ${String(error)}`);
+          assert.fail(`${name}${stringifyArgs(args)} was tagged "returns" but threw: ${String(error)}`);
         }
         for (const s of collectStrings(out)) {
           const bad = findForbidden(s);
-          assert.equal(bad, null, `${name}${JSON.stringify(args)} emitted ${bad} in a domain subpath`);
+          assert.equal(bad, null, `${name}${stringifyArgs(args)} emitted ${bad} in a domain subpath`);
         }
       }
       if (entry.throws !== "never") {
@@ -66,10 +76,10 @@ export function registerOutputScan(domain: string, mod: Record<string, unknown>,
           } catch (error) {
             thrown = error;
           }
-          assert.ok(thrown !== null, `${name}${JSON.stringify(args)} was tagged "throws" but returned`);
-          assert.ok(thrown instanceof InputError, `${name}${JSON.stringify(args)} threw a non-InputError: ${String(thrown)}`);
+          assert.ok(thrown !== null, `${name}${stringifyArgs(args)} was tagged "throws" but returned`);
+          assert.ok(thrown instanceof InputError, `${name}${stringifyArgs(args)} threw a non-InputError: ${String(thrown)}`);
           const bad = findForbidden((thrown as InputError).message);
-          assert.equal(bad, null, `${name}${JSON.stringify(args)} threw a message containing ${bad}`);
+          assert.equal(bad, null, `${name}${stringifyArgs(args)} threw a message containing ${bad}`);
         }
       }
     });
