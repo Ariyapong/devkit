@@ -9,9 +9,10 @@ export const fixtures: FixtureTable = {
   // (TextEncoder + btoa) never throws on any string input.
   base64Encode: { returns: [["hello"]], throws: "never" },
   base64Decode: { returns: [["aGVsbG8="]], throws: [["!!!!"]] },
-  // Delegates straight to encodeURIComponent with no wrapping try/catch —
-  // contains no throw statement, so it cannot throw InputError.
-  urlEncode: { returns: [["a b&c"]], throws: "never" },
+  // encodeURIComponent throws a URIError on a lone (unpaired) surrogate —
+  // the one input it rejects — so that case is wrapped and rethrown as
+  // InputError, mirroring urlDecode's existing try/catch.
+  urlEncode: { returns: [["a b&c"]], throws: [["\uD800"]] },
   urlDecode: { returns: [["a%20b"]], throws: [["%"]] },
   decodeJwt: { returns: [[SAMPLE_JWT]], throws: [["a.b"]] },
   // Array.from({length}, () => globalThis.crypto.randomUUID()) — no throw

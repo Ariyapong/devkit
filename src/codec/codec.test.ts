@@ -79,3 +79,8 @@ test("decodeJwt takes an injected now for expiresInMs", () => {
 test("makeUuids yields RFC-4122 v4 strings", () => {
   for (const id of makeUuids(3)) assert.match(id, /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
 });
+
+test("urlEncode rejects a lone surrogate with an InputError, never a URIError", () => {
+  assert.throws(() => urlEncode("\uD800"), InputError);
+  assert.equal(urlEncode("a b/ค"), "a%20b%2F%E0%B8%84");
+});

@@ -21,7 +21,11 @@ export function base64Decode(
 }
 
 export function urlEncode(text: string): string {
-  return encodeURIComponent(text);
+  try {
+    return encodeURIComponent(text);
+  } catch {
+    throw new InputError("Text contains an unpaired surrogate.");
+  }
 }
 
 export function urlDecode(input: string): string {
