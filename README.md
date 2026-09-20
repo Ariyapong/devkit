@@ -8,7 +8,7 @@ Pure TypeScript developer tools. Browser-safe subpaths `/json /api /time /codec 
 npm i @devwizards/devkit
 ```
 
-Requires Node >= 22 (`engines.node` in `package.json`; not enforced at install time by npm itself, only by CI and by any tool that checks it).
+Requires Node >= 22 (`engines.node` in `package.json`). npm warns (`EBADENGINE`) on an unsupported version but installs anyway; pnpm installs silently, with no warning at all. Enforcement is CI's job, and any consumer tooling that checks `engines` itself.
 
 ## Subpaths
 
@@ -41,8 +41,11 @@ import { InputError, sanitizeError, type ErrorDetail } from "@devwizards/devkit"
   anywhere in the package.
 - `message` is **text, not markup**. Render it as-is; it may embed the
   user's payload verbatim, newlines included (some parsers echo the
-  offending input back when they have no position to report), but it never
-  contains Discord fences or subtext.
+  offending input back when they have no position to report) — and if that
+  payload itself contained three backticks, `message` echoes them too. The
+  guarantee is narrower than "no fences ever": the **package** never adds
+  Discord layout syntax of its own: consumers render `message` as text, not
+  markup.
 - `detail?: ErrorDetail` carries a structured position and excerpt when the
   producer has one (`{ kind: "excerpt", position?, positionLine?, lines,
   caretLine }`). It is absent — not `undefined` — when there is nothing to
@@ -108,8 +111,8 @@ This is enforced, not just documented:
 
 - No subpath imports `node:*`, calls `require(`, or touches the identifiers
   `Buffer`, `process`, `__dirname` — an AST-level scan over every source
-  file fails the build on any of these (matched as identifiers, so a
-  `node:` substring inside a regex literal doesn't trip it).
+  file fails `npm test` (and so CI) on any of these (matched as identifiers,
+  so a `node:` substring inside a regex literal doesn't trip it).
 - `npm run test:browserish` compiles the whole suite and re-runs it under a
   preload that **deletes `Buffer` and `process` from `globalThis`** before
   any package code loads — proving the guarantee at runtime, not only in
@@ -118,9 +121,12 @@ This is enforced, not just documented:
   only as a parameter default or on the right of `??` in an options
   fallback (`opts.nowMs ?? Date.now()`). Every function that needs "now"
   takes it as a parameter.
-- No environment reads and no logging inside any domain subpath — `nowMs`,
-  `tz` and `rng` are always parameters with defaults, never read from
-  `process.env` or a module-level global.
+- No environment reads inside any domain subpath — `nowMs`, `tz` and `rng`
+  are always parameters with defaults, never read from `process.env` or a
+  module-level global; the `process` identifier is in the AST guard's
+  forbidden set above, so this one is enforced too. No logging (by review;
+  `console` is not in the guard's forbidden set, so this is a convention,
+  not a scanned invariant).
 - Discord layout syntax (a code fence, `-# ` subtext, a `<t:…>` timestamp)
   never appears in a domain subpath's *output* — enforced per export
   against a fixture table (`scan-fixtures.ts`) in each domain, over both its
@@ -135,7 +141,8 @@ This is enforced, not just documented:
   as one PR containing the compute change, the matching `./discord`
   renderer update, the moved string test, and a CHANGELOG entry naming the
   old and new shape — always a minor bump, never silent.
-- `1.0.0` lands once a real consumer has run these tools for a full release
-  cycle with no parity fix required. Not a fixed date.
+- `1.0.0` lands when the web consumer has shipped tools built on this package
+  for one full cycle AND the bot has been on it for a month with no parity
+  fix. Not before, and not a fixed date.
 - `npm pack --dry-run` is pinned in CI so a stray test file, fixture,
   `scan-fixtures.ts`, `.map` file, or `dist-test/` output never ships.
