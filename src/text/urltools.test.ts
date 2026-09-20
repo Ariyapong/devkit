@@ -76,7 +76,10 @@ test("parseUrl decodes punycode hosts to Unicode without node:url", () => {
 // the task report for the script + full output). This test itself imports no
 // node:url — the literals below are the recorded results. undefined means the
 // Unicode form equalled the ASCII form, so parseUrl reports no hostUnicode.
-test("parseUrl hostUnicode agrees with node:url.domainToUnicode on a ten-host table", () => {
+// Two more rows added when the host-lowercasing fix landed: a non-special
+// scheme's opaque host reaches toUnicode with its original case, so an
+// uppercase ASCII host and an uppercase punycode label are also covered here.
+test("parseUrl hostUnicode agrees with node:url.domainToUnicode on a twelve-host table", () => {
   const cases: [url: string, expected: string | undefined][] = [
     ["https://xn--12c1bik6bbd8ab6hd1b5jc6jta.com/", "เราเที่ยวด้วยกัน.com"], // Thai + ASCII TLD
     ["https://xn--e1afmkfd.xn--p1ai/", "пример.рф"], // Cyrillic host + Cyrillic TLD
@@ -88,6 +91,8 @@ test("parseUrl hostUnicode agrees with node:url.domainToUnicode on a ten-host ta
     ["https://xn--ls8h.example/", "💩.example"], // emoji-ish xn-- label
     ["https://xn--o3cw4h.example./", "ไทย.example."], // trailing dot
     ["https://192.168.1.1/", undefined], // IPv4 literal
+    ["ssh://Git@Example.COM/repo", "example.com"], // non-special scheme: opaque uppercase ASCII host
+    ["git://XN--E1AFMKFD.XN--P1AI/", "пример.рф"], // non-special scheme: opaque uppercase punycode host
   ];
   for (const [url, expected] of cases) {
     assert.equal(parseUrl(url)?.hostUnicode, expected, url);

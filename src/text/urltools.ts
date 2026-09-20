@@ -64,13 +64,16 @@ export function parseUrl(raw: string): UrlParts | null {
     href,
   };
   if (url.hostname !== "") {
-    // url.hostname is already lowercase ASCII/punycode per WHATWG for special
-    // schemes; a non-special scheme (git, ssh, redis, …) keeps an opaque host
-    // with no IDNA, so a malformed xn-- label can reach toUnicode intact —
-    // punycode throws RangeError on it. Undecodable ⇒ no Unicode form to
-    // report (the bot's node:url-based domainToUnicode returned "" here).
+    // url.hostname is already lowercase ASCII/punycode per WHATWG, but only
+    // for special schemes; a non-special scheme (git, ssh, redis, …) keeps an
+    // opaque host verbatim, case included, with no IDNA — so it can reach
+    // toUnicode both mixed-case and holding a malformed xn-- label. punycode's
+    // xn-- test is case-sensitive, so lowercase first (matches node:url's
+    // domainToUnicode, which lowercases internally) or an uppercase opaque
+    // host — ASCII or punycode — never decodes. Undecodable ⇒ no Unicode form
+    // to report (the bot's node:url-based domainToUnicode returned "" here).
     try {
-      const unicode = toUnicode(url.hostname);
+      const unicode = toUnicode(url.hostname.toLowerCase());
       if (unicode !== url.hostname) parts.hostUnicode = unicode;
     } catch {
       // not decodable punycode — ASCII form only
