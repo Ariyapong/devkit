@@ -50,7 +50,7 @@ test("convertTz takes an injected now so a relative time is deterministic", () =
   const a = convertTz("15:00", "Asia/Bangkok", "UTC", now);
   const b = convertTz("15:00", "Asia/Bangkok", "UTC", now);
   assert.deepEqual(a, b);
-  assert.match(a.output, /08:00/);
+  assert.equal(a.output, "2026-09-19 08:00");
 });
 
 test("explainCron", () => {
