@@ -95,3 +95,22 @@ test("a located error still carries the Invalid JSON prefix", () => {
   // datatools.test.ts asserts /Invalid JSON/ on toRows; keep that contract.
   assert.throws(() => toRows("{bad"), /Invalid JSON/);
 });
+
+test("both JSON parse paths throw the same located message and detail", () => {
+  const bad = '[\n  {"a": 1},\n  {"b" 2}\n]';
+  const grab = (fn: () => unknown): InputError => {
+    try {
+      fn();
+      throw new Error("expected a throw");
+    } catch (e) {
+      return e as InputError;
+    }
+  };
+  const viaFormat = grab(() => formatJson(bad));
+  const viaRows = grab(() => toRows(bad));
+  assert.ok(viaFormat instanceof InputError && viaRows instanceof InputError);
+  assert.equal(viaFormat.message, viaRows.message);
+  assert.deepEqual(viaFormat.detail, viaRows.detail);
+  assert.ok(viaFormat.detail); // the excerpt survives the hand-off
+  assert.equal(viaFormat.detail.positionLine, "  line 3, column 8");
+});
