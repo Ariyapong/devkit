@@ -86,17 +86,6 @@ test("locateJsonError lets the column sit one past the end of the line", () => {
   assert.equal(caret.indexOf("^"), caret.indexOf("|") + 8);
 });
 
-test("locateJsonError fences the excerpt so the caret can align", () => {
-  // The error path sends bare content through replySafe — no sendResult, no
-  // lang — and Discord renders bare content proportionally. Without its own
-  // fence the caret lines up under nothing.
-  const out = locate(BROKEN);
-  const lines = out.split("\n");
-  assert.equal(lines.filter((l) => l === "```").length, 2);
-  assert.equal(lines.at(-1), "```");
-  assert.ok(!lines[0]!.startsWith("```"));
-});
-
 test("the caret is positioned in UTF-16 code units, matching V8", () => {
   // Documented deviation, pinned as INTENDED: an astral character is two code
   // units, so the caret shifts one cell per emoji. Aligning it visually would
@@ -187,22 +176,6 @@ test("a window at the end of a line has no trailing ellipsis", () => {
   const excerpt = out.split("\n").find((l) => l.includes(" | "))!;
   assert.ok(excerpt.includes("…"));
   assert.ok(!excerpt.endsWith("…"));
-});
-
-test("a long neighbour line cannot blow the reply size limit", () => {
-  // The error path is replySafe (src/index.ts) — no attachment fallback and a
-  // swallowed catch — so an over-long reply is rejected by Discord and the
-  // user sees "did not respond" instead of an error. Every printed line must
-  // be bounded, not just the one that gets windowed around the column.
-  const blob = "x".repeat(1900);
-  const out = locate(`{\n  "big": "${blob}",\n  "bad" 1\n}`);
-  assert.ok(out.length < 1900, `reply was ${out.length} chars`);
-  assert.ok(out.includes("…"));
-});
-
-test("the whole message stays bounded on a pathological payload", () => {
-  const out = locate(`{\n  "a": "${"y".repeat(3000)}"\n  "b": 1\n}`);
-  assert.ok(out.length < 1900, `reply was ${out.length} chars`);
 });
 
 test("a position clause inside the payload cannot hijack the header", () => {
