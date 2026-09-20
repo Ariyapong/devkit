@@ -29,9 +29,7 @@ export class InputError extends Error {
     super(message);
     // The only assignment form exactOptionalPropertyTypes accepts: an absent
     // detail stays ABSENT, never `undefined`.
-    if (detail !== undefined) {
-      (this as any).detail = detail;
-    }
+    if (detail !== undefined) this.detail = detail;
   }
 }
 
