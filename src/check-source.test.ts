@@ -38,7 +38,8 @@ function zoneOf(file: string): string {
 
 function zoneOfImport(fromFile: string, specifier: string): string | null {
   if (!specifier.startsWith(".")) return null; // bare package import
-  const target = resolve(dirname(fromFile), specifier);
+  // Relative specifiers name the emitted .js; zone them by their .ts source.
+  const target = resolve(dirname(fromFile), specifier.replace(/\.js$/, ".ts"));
   return zoneOf(target);
 }
 
