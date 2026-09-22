@@ -30,10 +30,27 @@ test("jsonStringify escapes raw text", () => {
   assert.equal(jsonStringify('{"a":1}'), '"{\\"a\\":1}"');
 });
 
+test("jsonStringify keeps multi-line text verbatim — it never parses (README invariant)", () => {
+  // Newlines and indentation survive as escapes; input that is not JSON at
+  // all is accepted. Minifying here would take both away.
+  assert.equal(jsonStringify('{\n  "a": 1\n}'), '"{\\n  \\"a\\": 1\\n}"');
+  assert.equal(jsonStringify("hello\nworld"), '"hello\\nworld"');
+});
+
 test("jsonParseString unescapes double-encoded JSON", () => {
   assert.equal(jsonParseString('"{\\"a\\":1}"'), '{\n  "a": 1\n}');
   assert.equal(jsonParseString('"plain text"'), "plain text");
   assert.throws(() => jsonParseString('{"a":1}'), InputError); // already plain JSON
+});
+
+test("jsonParseString minified branch: compact output, and the error names the matching sibling", () => {
+  const escaped = jsonStringify('{\n  "a": 1,\n  "b": [2, 3]\n}');
+  assert.equal(jsonParseString(escaped, true), '{"a":1,"b":[2,3]}');
+  assert.equal(jsonParseString(escaped), '{\n  "a": 1,\n  "b": [\n    2,\n    3\n  ]\n}');
+  // Sending someone to the pretty tool when they asked for the minified one is
+  // the wrong signpost; matching the message keeps this off the invalid-JSON throw.
+  assert.throws(() => jsonParseString('{"a":1}', true), /\/json minify/);
+  assert.throws(() => jsonParseString('{"a":1}', false), /\/json format/);
 });
 
 test("jsonToTs infers nested interfaces", () => {

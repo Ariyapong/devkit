@@ -7,7 +7,7 @@
  * datatools, and closing that loop is a TDZ crash at startup.
  *
  * The result reaches the user's reply, never a log line — sanitizeError
- * collapses an InputError to its class name (errors.ts:11). The excerpt fence
+ * collapses an InputError to its class name (`sanitizeError` in errors.ts). The excerpt fence
  * is no longer applied here — `./discord`'s `renderErrorDetail` renders
  * `detail` into the fenced, Discord-shaped string.
  */

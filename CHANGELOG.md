@@ -7,6 +7,12 @@
   error class) can catch package errors without importing the root barrel
   and its whole dependency graph. The root still re-exports all three; the
   subpath and the root resolve to the **same** class (pinned by test).
+- Source guard (test-time, no published-surface change): `console` joins the
+  forbidden identifiers; `globalThis.process` / `globalThis["Buffer"]` /
+  destructuring `globalThis` are caught; bare imports are allow-listed to
+  the seven declared dependencies; the guard carries a fixture self-test.
+  CI's pack check is anchored and now also proves every `exports` target
+  ships in the tarball.
 - No compute change. Every 0.1.0 import keeps working unchanged.
 
 ## 0.1.0 — 2026-09-20

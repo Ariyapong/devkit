@@ -18,4 +18,8 @@ jobs:
       - run: npm run test:browserish
       - run: npm run check:dts
       - run: npm pack --dry-run 2>&1 | tee pack.txt
-      - run: "! grep -E 'test\\.js|scan-fixtures|dist-test|\\.map$' pack.txt"
+      # Nothing test-only ships: anchored on the emitted names, and the two
+      # build-time-only trees named even though tsc emits neither today.
+      - run: "! grep -E '\\.test\\.(js|d\\.ts)$|scan-fixtures|dist-test/|\\.map$|dist/types/|dist/scan/' pack.txt"
+      # Every exports-map target ships: a subpath that resolves at build time but is missing from the tarball would 404 at install.
+      - run: node -e "const e=require('./package.json').exports,p=require('fs').readFileSync('pack.txt','utf8');for(const [k,v] of Object.entries(e))for(const f of Object.values(v))if(!p.includes(f.replace('./','')))throw new Error(k+' -> '+f+' not in pack')"
