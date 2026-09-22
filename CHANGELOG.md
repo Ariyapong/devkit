@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0 — unreleased
+
+- Add `./errors` — `InputError`, `ErrorDetail` and `sanitizeError` on their
+  own subpath, so a consumer of one domain subpath (or of nothing but the
+  error class) can catch package errors without importing the root barrel
+  and its whole dependency graph. The root still re-exports all three; the
+  subpath and the root resolve to the **same** class (pinned by test).
+- No compute change. Every 0.1.0 import keeps working unchanged.
+
 ## 0.1.0 — 2026-09-20
 
 - Add `/json`, `/api`, `/time`, `/codec`, `/text`, `/debug` — six browser-safe

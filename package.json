@@ -1,6 +1,6 @@
 {
   "name": "@devwizards/devkit",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Wizard level tools for developers: pure TypeScript helpers for JSON, APIs, time, codecs, text and debugging.",
   "license": "MIT",
   "type": "module",
@@ -11,6 +11,7 @@
   "repository": { "type": "git", "url": "git+https://github.com/Ariyapong/devkit.git" },
   "exports": {
     ".":         { "types": "./dist/index.d.ts",         "default": "./dist/index.js" },
+    "./errors":  { "types": "./dist/errors.d.ts",        "default": "./dist/errors.js" },
     "./json":    { "types": "./dist/json/index.d.ts",    "default": "./dist/json/index.js" },
     "./api":     { "types": "./dist/api/index.d.ts",     "default": "./dist/api/index.js" },
     "./time":    { "types": "./dist/time/index.d.ts",    "default": "./dist/time/index.js" },

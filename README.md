@@ -15,6 +15,7 @@ Requires Node >= 22 (`engines.node` in `package.json`). npm warns (`EBADENGINE`)
 | Subpath | Purpose |
 |---|---|
 | `@devwizards/devkit` (root) | Everything below, re-exported under one barrel — except `./discord` |
+| `@devwizards/devkit/errors` | `InputError`, `ErrorDetail`, `sanitizeError` alone — for a consumer that catches errors from one domain subpath without loading the root's whole graph |
 | `@devwizards/devkit/json` | JSON/YAML/DSV parsing, linting, table/CSV conversion, and located parse errors |
 | `@devwizards/devkit/api` | HTTP contract diffing, JSON Schema inference, and curl ↔ fetch conversion |
 | `@devwizards/devkit/time` | Epoch/ISO/cron parsing, timezone conversion, and time-string detection |
@@ -34,8 +35,14 @@ contains Discord layout syntax is reachable only through
 Every domain throws the same error class for bad input:
 
 ```ts
-import { InputError, sanitizeError, type ErrorDetail } from "@devwizards/devkit";
+import { InputError, sanitizeError, type ErrorDetail } from "@devwizards/devkit/errors";
 ```
+
+The root re-exports the same three names, so `@devwizards/devkit` works too.
+Import from `./errors` when the rest of your imports come from a domain
+subpath — the root barrel pulls in every domain's dependencies (`luxon`,
+`yaml`, …) for the sake of one class. Both paths resolve to **one** class:
+`instanceof` agrees across them (pinned by test).
 
 - `InputError extends Error` — the **only** type thrown for bad input,
   anywhere in the package.
