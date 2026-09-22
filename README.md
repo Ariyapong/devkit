@@ -117,9 +117,14 @@ The six domain subpaths and `./discord` are safe to bundle for a browser.
 This is enforced, not just documented:
 
 - No subpath imports `node:*`, calls `require(`, or touches the identifiers
-  `Buffer`, `process`, `__dirname` — an AST-level scan over every source
-  file fails `npm test` (and so CI) on any of these (matched as identifiers,
-  so a `node:` substring inside a regex literal doesn't trip it).
+  `Buffer`, `process`, `__dirname`, `console` — free, through
+  `globalThis.x` / `globalThis["x"]`, or by destructuring `globalThis` — and
+  no source file imports a package outside the seven declared dependencies
+  (a new dependency is a design decision, not a convenience). An AST-level
+  scan over every source file fails `npm test` (and so CI) on any of these
+  (matched as identifiers, so a `node:` substring inside a regex literal
+  doesn't trip it). The scan carries its own fixture self-test, so each
+  class it claims to catch is proven caught, not assumed.
 - `npm run test:browserish` compiles the whole suite and re-runs it under a
   preload that **deletes `Buffer` and `process` from `globalThis`** before
   any package code loads — proving the guarantee at runtime, not only in
@@ -131,9 +136,8 @@ This is enforced, not just documented:
 - No environment reads inside any domain subpath — `nowMs`, `tz` and `rng`
   are always parameters with defaults, never read from `process.env` or a
   module-level global; the `process` identifier is in the AST guard's
-  forbidden set above, so this one is enforced too. No logging (by review;
-  `console` is not in the guard's forbidden set, so this is a convention,
-  not a scanned invariant).
+  forbidden set above, so this one is enforced too. No logging — `console`
+  is in the same forbidden set.
 - Discord layout syntax (a code fence, `-# ` subtext, a `<t:…>` timestamp)
   never appears in a domain subpath's *output* — enforced per export
   against a fixture table (`scan-fixtures.ts`) in each domain, over both its
