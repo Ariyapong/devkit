@@ -119,7 +119,7 @@ This is enforced, not just documented:
 - No subpath imports `node:*`, calls `require(`, or touches the identifiers
   `Buffer`, `process`, `__dirname`, `console` — free, through
   `globalThis.x` / `globalThis["x"]`, or by destructuring `globalThis` — and
-  no source file imports a package outside the seven declared dependencies
+  no source file imports a package outside the six declared dependencies
   (a new dependency is a design decision, not a convenience). An AST-level
   scan over every source file fails `npm test` (and so CI) on any of these
   (matched as identifiers, so a `node:` substring inside a regex literal

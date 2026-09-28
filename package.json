@@ -1,6 +1,6 @@
 {
   "name": "@devwizards/devkit",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "description": "Wizard level tools for developers: pure TypeScript helpers for JSON, APIs, time, codecs, text and debugging.",
   "license": "MIT",
   "type": "module",
@@ -33,7 +33,6 @@
     "cronstrue": "^3.24.0",
     "diff": "^9.0.0",
     "luxon": "^3.7.2",
-    "punycode": "2.3.1",
     "semver": "^7.8.5",
     "yaml": "^2.9.0"
   },

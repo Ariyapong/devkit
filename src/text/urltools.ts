@@ -1,4 +1,4 @@
-import { toUnicode } from "punycode/punycode.es6.js";
+import { toUnicode } from "./punycode.js";
 
 export interface UrlParts {
   scheme: string;          // url.protocol without the trailing ":"
@@ -67,7 +67,7 @@ export function parseUrl(raw: string): UrlParts | null {
     // url.hostname is already lowercase ASCII/punycode per WHATWG, but only
     // for special schemes; a non-special scheme (git, ssh, redis, …) keeps an
     // opaque host verbatim, case included, with no IDNA — so it can reach
-    // toUnicode both mixed-case and holding a malformed xn-- label. punycode's
+    // toUnicode both mixed-case and holding a malformed xn-- label. The decoder's
     // xn-- test is case-sensitive, so lowercase first (matches node:url's
     // domainToUnicode, which lowercases internally) or an uppercase opaque
     // host — ASCII or punycode — never decodes. Undecodable ⇒ no Unicode form

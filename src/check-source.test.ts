@@ -9,8 +9,8 @@ import { fileURLToPath } from "node:url";
 
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)));
 const FORBIDDEN_IDENTIFIERS = new Set(["Buffer", "process", "__dirname", "require", "console"]);
-/** The seven runtime dependencies of package.json — a new one is a design decision, not a convenience (design §2). */
-const ALLOWED_PACKAGES = new Set(["cron-parser", "cronstrue", "diff", "luxon", "semver", "yaml", "punycode/punycode.es6.js"]);
+/** The six runtime dependencies of package.json — a new one is a design decision, not a convenience (design §2). */
+const ALLOWED_PACKAGES = new Set(["cron-parser", "cronstrue", "diff", "luxon", "semver", "yaml"]);
 const CLOCK_MARKER = "// clock: intentional";
 
 type TS = typeof import("typescript");
@@ -76,9 +76,6 @@ function scanSource(ts: TS, file: string, text: string): string[] {
 
   const checkSpecifier = (node: Node, spec: string): void => {
     if (spec.startsWith("node:")) violations.push(`${where(node)} imports ${spec}`);
-    if (spec === "punycode" || (spec.startsWith("punycode/") && spec !== "punycode/punycode.es6.js")) {
-      violations.push(`${where(node)} imports ${spec} — only "punycode/punycode.es6.js" is allowed`);
-    }
     const toZone = zoneOfImport(file, spec);
     if (toZone !== null && !importAllowed(zone, toZone)) {
       violations.push(`${where(node)} (${zone}) may not import ${spec} (${toZone})`);
@@ -171,7 +168,7 @@ test("guard fixture: the allowed forms produce no violation", async (t) => {
   assert.deepEqual(scanSource(ts, IN_JSON, clean), []);
 });
 
-test("guard fixture: node builtins, undeclared packages, and the punycode bare specifier", async (t) => {
+test("guard fixture: node builtins, undeclared packages, and the bare punycode builtin", async (t) => {
   const ts = await loadTs(t);
   if (ts === null) return;
   const v = scanSource(
@@ -182,7 +179,6 @@ test("guard fixture: node builtins, undeclared packages, and the punycode bare s
   assert.deepEqual(v, [
     "json/fixture.ts:1 imports node:fs",
     "json/fixture.ts:2 imports lodash — not a declared dependency",
-    'json/fixture.ts:3 imports punycode — only "punycode/punycode.es6.js" is allowed',
     "json/fixture.ts:3 imports punycode — not a declared dependency",
     "json/fixture.ts:4 imports node:crypto",
   ]);

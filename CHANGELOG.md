@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.2.1 — unreleased
+
+- Drop the `punycode` dependency. `parseUrl`'s `hostUnicode` now uses a
+  vendored copy of punycode.js 2.3.1's decoder (`src/text/punycode.ts`, MIT
+  notice kept) instead of importing `punycode/punycode.es6.js`, an ES module
+  inside a package without `"type": "module"`. Vite's SSR dev runner loaded
+  that file natively and failed ("does not provide an export named
+  'toUnicode'"), so consumers had to bundle the package with
+  `ssr.noExternal`. No change to any published signature or output; six
+  runtime dependencies remain.
+
 ## 0.2.0 — 2026-09-22
 
 - Add `./errors` — `InputError`, `ErrorDetail` and `sanitizeError` on their
