@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.2.1 — unreleased
+## 0.2.1 — 2026-09-28
 
 - Drop the `punycode` dependency. `parseUrl`'s `hostUnicode` now uses a
   vendored copy of punycode.js 2.3.1's decoder (`src/text/punycode.ts`, MIT
