@@ -114,3 +114,16 @@ test("queryJson: the miss caret sits under the failing segment", () => {
     assert.equal(e.detail?.caretLine, 1);
   }
 });
+
+test("queryJson: miss after a quoted key that ends in an escaped backslash (prefix and caret stay right)", () => {
+  const doc = '{"a": {"x\\\\": 5}}'; // the key is x\
+  assert.equal(queryJson(doc, 'a["x\\\\"]'), 5);
+  assert.throws(() => queryJson(doc, 'a["x\\\\"].y'), (e) => {
+    assert.ok(e instanceof InputError);
+    assert.equal(e.message, 'Path not found at "a["x\\\\"].y": the value there is a number.');
+    assert.equal(e.detail?.position?.column, 9); // the '.' of .y
+    assert.deepEqual(e.detail?.lines, ['  1 | a["x\\\\"].y', "    |         ^"]);
+    return true;
+  });
+  assert.throws(() => queryJson(doc, 'a["zz"].y'), (e) => e instanceof InputError && e.message === 'Path not found at "a["zz"]": the key does not exist.');
+});

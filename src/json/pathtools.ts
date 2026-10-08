@@ -24,19 +24,21 @@ function syntaxError(path: string, at: number): InputError {
  * is the key `$a`. Whitespace is literal. Empty dot segments and C0 controls
  * are syntax errors.
  */
-export function parsePath(path: string): PathSegment[] {
+function parseSegments(path: string): { segments: PathSegment[]; starts: number[] } {
   if (path.length > MAX_PATH_CHARS) throw new InputError("Path is too long.");
   const control = /[\u0000-\u001f]/.exec(path);
   if (control) throw syntaxError(path, control.index);
 
   const segments: PathSegment[] = [];
+  const starts: number[] = [];
   let i = 0;
   if (path[0] === "$" && (path.length === 1 || path[1] === "." || path[1] === "[")) i = 1;
-  if (i === path.length) return segments;
+  if (i === path.length) return { segments, starts };
   // A leading '.' is optional on the first segment; a bracket may start too.
   let first = true;
   while (i < path.length) {
     const ch = path[i]!;
+    starts.push(i);
     if (ch === "." || (first && ch !== "[")) {
       const start = ch === "." ? i + 1 : i;
       if (ch === "." ) i++;
@@ -81,7 +83,11 @@ export function parsePath(path: string): PathSegment[] {
     }
     first = false;
   }
-  return segments;
+  return { segments, starts };
+}
+
+export function parsePath(path: string): PathSegment[] {
+  return parseSegments(path).segments;
 }
 
 function describe(value: unknown): string {
@@ -90,55 +96,16 @@ function describe(value: unknown): string {
   return `a ${value === null ? "null" : typeof value}`;
 }
 
-/** Column (1-based) where segment `n` starts in `path`, for the miss caret. */
-function segmentStart(path: string, n: number): number {
-  let i = 0;
-  if (path[0] === "$" && (path.length === 1 || path[1] === "." || path[1] === "[")) i = 1;
-  let seen = 0;
-  while (i < path.length) {
-    const ch = path[i]!;
-    if (ch === ".") {
-      if (seen === n) return i + 1;
-      seen++;
-      i++;
-      while (i < path.length && path[i] !== "." && path[i] !== "[") i++;
-    } else if (ch === "[") {
-      if (seen === n) return i + 1;
-      seen++;
-      const q = path[i + 1];
-      if (q === '"' || q === "'") {
-        i += 2;
-        while (i < path.length && !(path[i] === q && path[i - 1] !== "\\")) i++;
-        i += 2;
-      } else {
-        while (i < path.length && path[i] !== "]") i++;
-        i++;
-      }
-    } else {
-      if (seen === n) return i + 1;
-      seen++;
-      while (i < path.length && path[i] !== "." && path[i] !== "[") i++;
-    }
-  }
-  return path.length + 1;
-}
-
-function pathPrefix(path: string, upToSegment: number): string {
-  // The text of the path up to and including segment `upToSegment`.
-  const nextStart = segmentStart(path, upToSegment + 1);
-  const raw = path.slice(0, nextStart - 1);
-  return raw.endsWith(".") ? raw.slice(0, -1) : raw;
-}
-
 /** Parses `input` and walks `path`. Misses throw InputError with the segment named. */
 export function queryJson(input: string, path: string): unknown {
-  const segments = parsePath(path);
+  const { segments, starts } = parseSegments(path);
   let value: unknown = parseJsonOrThrow(input);
   for (let n = 0; n < segments.length; n++) {
     const seg = segments[n]!;
-    const where = pathPrefix(path, n);
+    const raw = path.slice(0, starts[n + 1] ?? path.length);
+    const where = raw.endsWith(".") ? raw.slice(0, -1) : raw;
     const miss = (reason: string) =>
-      new InputError(`Path not found at "${where}": ${reason}.`, pathDetail(path, segmentStart(path, n)));
+      new InputError(`Path not found at "${where}": ${reason}.`, pathDetail(path, starts[n]! + 1));
     // Scalars get a bare description; a container of the wrong kind names
     // the kind that was wanted. Both wordings are pinned in the tests.
     const isContainer = value !== null && typeof value === "object";
