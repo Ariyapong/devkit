@@ -1,0 +1,25 @@
+src/discord/hash-render.test.ts
+  s_2f6afca2b86d40::t_203573b9ffdb30 1-41
+src/discord/hash-render.ts
+  s_2f6afca2b86d40::t_3c5d38b28b34c8 1-39
+src/discord/index.ts
+  s_2f6afca2b86d40::t_57bc0f18353b53 9
+src/index.test.ts
+  s_2f6afca2b86d40::t_9b9d8ee501a0b1 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "e96509bcb8b894e617e42d770f1f2b9409ae142b",
+  "prompts": {},
+  "sessions": {
+    "s_2f6afca2b86d40": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-aa0b685e1681c8614",
+        "model": "unknown"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
