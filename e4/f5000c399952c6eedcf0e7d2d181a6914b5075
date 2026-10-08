@@ -1,0 +1,19 @@
+src/codec/hashtools.test.ts
+  s_01ae823eace555::t_2fd7660248a6a3 51
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "e4f5000c399952c6eedcf0e7d2d181a6914b5075",
+  "prompts": {},
+  "sessions": {
+    "s_01ae823eace555": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38751926-fbcb-4c06-a1f0-2a4420c690c9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
