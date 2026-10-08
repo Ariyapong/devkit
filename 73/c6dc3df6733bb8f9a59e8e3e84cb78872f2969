@@ -1,0 +1,43 @@
+package.json
+  s_01ae823eace555::t_687833d94f633b 20
+scripts/consumer/consumer.ts
+  s_01ae823eace555::t_e193597ba87100 6,11
+src/check-source.test.ts
+  s_01ae823eace555::t_aa94a46096ce79 51
+src/color/colornames.ts
+  s_01ae823eace555::t_20176ed3f0e15d 1-160
+src/color/colortools.test.ts
+  s_01ae823eace555::t_ab8b3fb471e185 1-133
+src/color/colortools.ts
+  s_01ae823eace555::t_10527d93b1663f 1-168
+src/color/contrast.test.ts
+  s_01ae823eace555::t_0733ee89071fe0 1-55
+src/color/contrast.ts
+  s_01ae823eace555::t_81989af1320ea0 1-63
+src/color/index.ts
+  s_01ae823eace555::t_312ac971010a5f 1-5
+src/color/output-scan.test.ts
+  s_01ae823eace555::t_4c7aef47538b5b 1-5
+src/color/scan-fixtures.ts
+  s_01ae823eace555::t_1874bda8ba5791 1-21
+src/index.test.ts
+  s_01ae823eace555::t_efd0e16d3ec599 10,14
+src/index.ts
+  s_01ae823eace555::t_c6ca74284f1d5b 15-16
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "73c6dc3df6733bb8f9a59e8e3e84cb78872f2969",
+  "prompts": {},
+  "sessions": {
+    "s_01ae823eace555": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38751926-fbcb-4c06-a1f0-2a4420c690c9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
