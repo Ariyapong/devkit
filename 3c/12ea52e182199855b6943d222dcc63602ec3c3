@@ -1,0 +1,23 @@
+CHANGELOG.md
+  s_01ae823eace555::t_77ca37f9535f4f 7,12,32
+README.md
+  s_01ae823eace555::t_48862d1664ae36 136-141
+package-lock.json
+  s_01ae823eace555::t_3d0e3fe654fc39 3,9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "3c12ea52e182199855b6943d222dcc63602ec3c3",
+  "prompts": {},
+  "sessions": {
+    "s_01ae823eace555": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38751926-fbcb-4c06-a1f0-2a4420c690c9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
