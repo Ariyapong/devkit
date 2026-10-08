@@ -38,4 +38,7 @@ export const fixtures: FixtureTable = {
   unescapeJsonString: { returns: [['a\\"b'], ["plain"]], throws: [["\\q"]] },
   // A single replace(); no throw statement.
   escapeRegex: { returns: [["a.b*c"]], throws: "never" },
+  // String filtering only; no throw statement.
+  alphabetFor: { returns: [["hex", false], ["alphanumeric", true]], throws: "never" },
+  generateTokens: { returns: [[{ type: "hex", length: 16, count: 2, unambiguous: false }]], throws: [[{ type: "hex", length: 2, count: 1, unambiguous: false }]] },
 };

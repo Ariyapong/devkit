@@ -5,7 +5,7 @@ export type Rng = (max: number) => number;
  * Uniform integer in [0, max) from Web Crypto, bias-free by rejection
  * sampling (Node ≥ 19 and every browser expose globalThis.crypto).
  */
-function cryptoRandomInt(max: number): number {
+export function cryptoRandomInt(max: number): number {
   if (!Number.isInteger(max) || max <= 0 || max > 0x1_0000_0000) {
     throw new RangeError(`max must be an integer in (0, 2^32], got ${max}`);
   }
