@@ -1,0 +1,21 @@
+src/codec/md5.test.ts
+  s_ef4c455ebc08df::t_65b23b80a8c8b5 1-34
+src/codec/md5.ts
+  s_ef4c455ebc08df::t_6c5431ef4c8dab 1-69
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "078139fe558d2f8ecc5aa1195bfc2057f516d91b",
+  "prompts": {},
+  "sessions": {
+    "s_ef4c455ebc08df": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a7accc5a3606ad768",
+        "model": "unknown"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
