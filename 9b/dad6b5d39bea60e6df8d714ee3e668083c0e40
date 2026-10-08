@@ -1,0 +1,27 @@
+src/index.ts
+  s_01ae823eace555::t_074a70a0ec9d39 3-4
+src/json/index.ts
+  s_01ae823eace555::t_2331ed2b39a40e 10-11
+src/json/pathtools.test.ts
+  s_01ae823eace555::t_94e873bc8d4c13 1-116
+src/json/scan-fixtures.ts
+  s_01ae823eace555::t_7140cc8e47e946 32-33
+src/json/pathtools.ts
+  s_01ae823eace555::t_54c8d293517fda 1-159
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "9bdad6b5d39bea60e6df8d714ee3e668083c0e40",
+  "prompts": {},
+  "sessions": {
+    "s_01ae823eace555": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38751926-fbcb-4c06-a1f0-2a4420c690c9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
