@@ -11,13 +11,26 @@ export function minifyJson(input: string): string {
   return JSON.stringify(parseJsonOrThrow(input));
 }
 
-export function validateJson(input: string): string {
+export type JsonKind = "object" | "array" | "string" | "number" | "boolean" | "null";
+export interface JsonSummary {
+  kind: JsonKind;
+  /** Key count for an object, item count for an array; absent for scalars. */
+  size?: number;
+}
+
+export function validateJson(input: string): JsonSummary {
   const value = parseJsonOrThrow(input);
-  if (Array.isArray(value)) return `✅ Valid JSON — array, ${value.length} item(s)`;
-  if (value !== null && typeof value === "object") {
-    return `✅ Valid JSON — object, ${Object.keys(value).length} key(s)`;
-  }
-  return `✅ Valid JSON — ${value === null ? "null" : typeof value}`;
+  if (Array.isArray(value)) return { kind: "array", size: value.length };
+  if (value !== null && typeof value === "object") return { kind: "object", size: Object.keys(value).length };
+  if (value === null) return { kind: "null" };
+  return { kind: typeof value as "string" | "number" | "boolean" };
+}
+
+/** The 0.2 display string, byte for byte. Plain text with a result marker (rule 4.1, renderLint precedent). */
+export function renderJsonSummary(summary: JsonSummary): string {
+  if (summary.kind === "array") return `✅ Valid JSON — array, ${summary.size} item(s)`;
+  if (summary.kind === "object") return `✅ Valid JSON — object, ${summary.size} key(s)`;
+  return `✅ Valid JSON — ${summary.kind}`;
 }
 
 /** Raw text → escaped JSON string literal (for embedding JSON in a string field). */

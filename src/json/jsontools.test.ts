@@ -7,6 +7,7 @@ import {
   jsonToTs,
   jsonToYaml,
   minifyJson,
+  renderJsonSummary,
   validateJson,
   yamlToJson,
 } from "./jsontools.js";
@@ -20,10 +21,21 @@ test("formatJson / minifyJson", () => {
   assert.throws(() => formatJson("{nope"), InputError);
 });
 
-test("validateJson summaries", () => {
-  assert.equal(validateJson('{"a":1,"b":2}'), "✅ Valid JSON — object, 2 key(s)");
-  assert.equal(validateJson("[1,2,3]"), "✅ Valid JSON — array, 3 item(s)");
-  assert.equal(validateJson("42"), "✅ Valid JSON — number");
+test("validateJson returns a summary object", () => {
+  assert.deepEqual(validateJson('{"a":1,"b":2}'), { kind: "object", size: 2 });
+  assert.deepEqual(validateJson("[1,2,3]"), { kind: "array", size: 3 });
+  assert.deepEqual(validateJson("42"), { kind: "number" });
+  assert.deepEqual(validateJson("null"), { kind: "null" });
+  assert.deepEqual(validateJson('"s"'), { kind: "string" });
+  assert.deepEqual(validateJson("true"), { kind: "boolean" });
+  assert.throws(() => validateJson("{nope"), InputError);
+});
+
+test("renderJsonSummary keeps the 0.2 strings byte for byte", () => {
+  assert.equal(renderJsonSummary(validateJson('{"a":1,"b":2}')), "✅ Valid JSON — object, 2 key(s)");
+  assert.equal(renderJsonSummary(validateJson("[1,2,3]")), "✅ Valid JSON — array, 3 item(s)");
+  assert.equal(renderJsonSummary(validateJson("42")), "✅ Valid JSON — number");
+  assert.equal(renderJsonSummary(validateJson("null")), "✅ Valid JSON — null");
 });
 
 test("jsonStringify escapes raw text", () => {

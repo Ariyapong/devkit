@@ -8,6 +8,10 @@ export const fixtures: FixtureTable = {
   formatJson:      { returns: [[OBJ]], throws: [[BAD]] },
   minifyJson:      { returns: [[OBJ]], throws: [[BAD]] },
   validateJson:    { returns: [[OBJ], ["[]"], ["null"]], throws: [[BAD]] },
+  renderJsonSummary: { returns: [[{ kind: "object", size: 2 }], [{ kind: "null" }]], throws: "never" },
+  // Both branches, so the scan sees both strings.
+  renderJsonlSummary: { returns: [[{ ok: true, values: [1], lines: 1 }], [{ ok: false, errors: [{ line: 1, message: "x" }], lines: 1 }]], throws: "never" },
+  renderJsonlReport: { returns: [[{ ok: true, values: [1], lines: 1 }], [{ ok: false, errors: [{ line: 1, message: "x" }], lines: 1 }]], throws: "never" },
   jsonStringify:   { returns: [["any text ` with a backtick"]], throws: "never" },
   jsonParseString: { returns: [['"a\\nb"'], ['"x"', true]], throws: [["not a string literal"]] },
   jsonToTs:        { returns: [[OBJ], [OBJ, "Thing"]], throws: [[BAD]] },

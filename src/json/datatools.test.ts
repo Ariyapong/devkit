@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { parseDsv, csvToJson, jsonToCsv, toRows, validateJsonl, queryToJson } from "./datatools.js";
+import { parseDsv, csvToJson, jsonToCsv, toRows, validateJsonl, renderJsonlReport, renderJsonlSummary, queryToJson } from "./datatools.js";
 import { InputError } from "../errors.js";
 
 test("parseDsv: basic rows and cells", () => {
@@ -148,26 +148,42 @@ test("jsonToCsv: missing keys named after Object.prototype methods stay empty", 
 test("validateJsonl: all valid converts to a JSON array", () => {
   const res = validateJsonl('{"a":1}\n[2]\n"x"\n');
   assert.equal(res.ok, true);
-  assert.deepEqual(JSON.parse(res.body), [{ a: 1 }, [2], "x"]);
+  if (res.ok) {
+    assert.deepEqual(res.values, [{ a: 1 }, [2], "x"]);
+    assert.equal(res.lines, 3);
+    assert.deepEqual(JSON.parse(renderJsonlReport(res)), [{ a: 1 }, [2], "x"]);
+    assert.equal(renderJsonlSummary(res), "✅ Valid JSON Lines — 3 line(s)");
+  }
 });
 
 test("validateJsonl: broken rows reported with line numbers (blank line = broken)", () => {
   const res = validateJsonl('{"a":1}\n{nope\n\n{"b":2}');
   assert.equal(res.ok, false);
-  assert.match(res.body, /^❌ 2 of 4 line\(s\) invalid/);
-  assert.match(res.body, /line 2: /);
-  assert.match(res.body, /line 3: /);
+  if (!res.ok) {
+    assert.equal(res.lines, 4);
+    assert.deepEqual(res.errors.map((e) => e.line), [2, 3]);
+    assert.ok(res.errors.every((e) => e.message.length > 0));
+  }
+  const body = renderJsonlReport(res);
+  assert.match(body, /^❌ 2 of 4 line\(s\) invalid/);
+  assert.match(body, /line 2: /);
+  assert.match(body, /line 3: /);
+  assert.equal(renderJsonlSummary(res), "❌ 2 of 4 line(s) invalid");
+  assert.equal(body.split("\n")[0], renderJsonlSummary(res));
 });
 
 test("validateJsonl: CRLF tolerated", () => {
   assert.equal(validateJsonl("1\r\n2\r\n").ok, true);
 });
 
-test("validateJsonl: caps the report at 10 broken lines", () => {
+test("validateJsonl: reports every broken line; the renderer caps at 10", () => {
   const res = validateJsonl(Array.from({ length: 12 }, () => "{nope").join("\n"));
-  assert.match(res.body, /12 of 12/);
-  assert.match(res.body, /…and 2 more/);
-  assert.equal(res.body.split("\n").length, 12); // header + 10 lines + "more"
+  assert.equal(res.ok, false);
+  if (!res.ok) assert.equal(res.errors.length, 12);
+  const body = renderJsonlReport(res);
+  assert.match(body, /12 of 12/);
+  assert.match(body, /…and 2 more/);
+  assert.equal(body.split("\n").length, 12); // header + 10 lines + "more"
 });
 
 test("validateJsonl: empty input throws", () => {

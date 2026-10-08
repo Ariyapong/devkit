@@ -26,3 +26,11 @@ test("findJwt: no token", () => {
 test("findJwt: empty signature part is not matched", () => {
   assert.equal(findJwt(`${b64url({ alg: "none" })}.${b64url({ sub: "3" })}.`), null);
 });
+
+test("findJwt: unsecured (empty-signature) tokens only with allowUnsecured", () => {
+  const unsecured = `${TOKEN.split(".").slice(0, 2).join(".")}.`;
+  assert.equal(findJwt(`x ${unsecured} y`), null);
+  assert.equal(findJwt(`x ${unsecured} y`, { allowUnsecured: true }), unsecured);
+  assert.equal(findJwt(`x ${TOKEN} y`, { allowUnsecured: true }), TOKEN); // signed still wins
+  assert.equal(findJwt(`x ${TOKEN} y`, {}), TOKEN);
+});

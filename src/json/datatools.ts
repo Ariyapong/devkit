@@ -193,8 +193,12 @@ export function jsonToCsv(input: string, delimiter: "," | "\t"): string {
   return [source.keys.map((k) => cellText(k, delimiter)).join(delimiter), ...body].join("\n");
 }
 
-/** JSON Lines: every line must parse. ok ⇒ body is the records as a JSON array. */
-export function validateJsonl(input: string): { ok: boolean; body: string } {
+export type JsonlResult =
+  | { ok: true; values: unknown[]; lines: number }
+  | { ok: false; errors: { line: number; message: string }[]; lines: number };
+
+/** Every line parsed; every bad line reported (the ten-line cap is the renderer's). */
+export function validateJsonl(input: string): JsonlResult {
   const src =
     input.endsWith("\r\n") ? input.slice(0, -2)
     : input.endsWith("\n") ? input.slice(0, -1)
@@ -202,24 +206,31 @@ export function validateJsonl(input: string): { ok: boolean; body: string } {
   if (src.trim() === "") throw new InputError("Empty input.");
   const lines = src.split("\n").map((l) => (l.endsWith("\r") ? l.slice(0, -1) : l));
   const values: unknown[] = [];
-  const errors: string[] = [];
+  const errors: { line: number; message: string }[] = [];
   lines.forEach((line, i) => {
     try {
       values.push(JSON.parse(line));
     } catch (error) {
-      errors.push(`line ${i + 1}: ${(error as Error).message}`);
+      errors.push({ line: i + 1, message: (error as Error).message });
     }
   });
-  if (errors.length === 0) return { ok: true, body: JSON.stringify(values, null, 2) };
-  const more = errors.length > 10 ? [`…and ${errors.length - 10} more`] : [];
-  return {
-    ok: false,
-    body: [
-      `❌ ${errors.length} of ${lines.length} line(s) invalid`,
-      ...errors.slice(0, 10),
-      ...more,
-    ].join("\n"),
-  };
+  if (errors.length === 0) return { ok: true, values, lines: lines.length };
+  return { ok: false, errors, lines: lines.length };
+}
+
+/** One-line Result row. The failure string is the 0.2 body's first line; the success string is new in 0.3. */
+export function renderJsonlSummary(result: JsonlResult): string {
+  return result.ok
+    ? `✅ Valid JSON Lines — ${result.lines} line(s)`
+    : `❌ ${result.errors.length} of ${result.lines} line(s) invalid`;
+}
+
+/** The 0.2 `body`, byte for byte: the array on success; summary + first ten errors + "…and K more" otherwise. */
+export function renderJsonlReport(result: JsonlResult): string {
+  if (result.ok) return JSON.stringify(result.values, null, 2);
+  const shown = result.errors.slice(0, 10).map((e) => `line ${e.line}: ${e.message}`);
+  const more = result.errors.length > 10 ? [`…and ${result.errors.length - 10} more`] : [];
+  return [renderJsonlSummary(result), ...shown, ...more].join("\n");
 }
 
 /** Query string / URL -> JSON object. Values stay strings; repeats become arrays. */
