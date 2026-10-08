@@ -48,7 +48,7 @@ test("hmacText matches node:crypto over 5,000 random text/key pairs", async () =
     const key = randomBytes(1 + Math.floor(Math.random() * 150)).toString("latin1");
     if (key.trim() === "") continue; // a whitespace-only key is (rightly) rejected as blank
     const algo = HASH_ALGORITHMS[i % HASH_ALGORITHMS.length]!;
-    assert.equal(await hmacText(text, key, algo), createHmac(NODE_NAME[algo], Buffer.from(key, "utf8")).update(text, "utf8").digest("hex"));
+    assert.equal(await hmacText(text, key, algo), createHmac(NODE_NAME[algo], new TextEncoder().encode(key)).update(text, "utf8").digest("hex"));
   }
 });
 
