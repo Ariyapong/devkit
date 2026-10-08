@@ -1,0 +1,27 @@
+src/index.ts
+  s_214e71f29fade3::t_650595c294edc7 11-12
+src/text/index.ts
+  s_214e71f29fade3::t_32866293651293 16-17
+src/text/linetools.test.ts
+  s_214e71f29fade3::t_e5ff45b3f384f8 1-48
+src/text/linetools.ts
+  s_214e71f29fade3::t_319b3f52d29b9c 1-70
+src/text/scan-fixtures.ts
+  s_214e71f29fade3::t_fe814159197da1 4,97-99
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "64e3c24badec465a9cf696ab38104f993e165b9d",
+  "prompts": {},
+  "sessions": {
+    "s_214e71f29fade3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-ad62b997326a2594d",
+        "model": "unknown"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
