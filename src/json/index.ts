@@ -7,3 +7,5 @@ export { parseDsv, inferValue, csvToJson, jsonToCsv, toRows, validateJsonl, quer
 export type { DsvCell, TableSource } from "./datatools.js";
 export { jsonToTable, cellDisplay, graphemeLength, truncateGraphemes, MAX_CELL } from "./tabletools.js";
 export type { CellRender } from "./tabletools.js";
+export { parsePath, queryJson, MAX_PATH_CHARS } from "./pathtools.js";
+export type { PathSegment } from "./pathtools.js";

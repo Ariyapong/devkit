@@ -29,4 +29,6 @@ export const fixtures: FixtureTable = {
   cellDisplay:     { returns: [["x"], [null], [{ k: 1 }]], throws: "never" },
   graphemeLength:  { returns: [["สวัสดี"]], throws: "never" },
   truncateGraphemes: { returns: [["abcdef", 3]], throws: "never" },
+  parsePath: { returns: [["a.b[0]"], [""], ['$["k"]']], throws: [["a..b"], ["a\nb"]] },
+  queryJson: { returns: [[OBJ, "b[1]"], [OBJ, ""]], throws: [[OBJ, "zzz"], [BAD, "a"], [OBJ, "a["]] },
 };
