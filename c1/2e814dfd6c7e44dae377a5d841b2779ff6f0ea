@@ -1,0 +1,33 @@
+src/codec/hashtools.ts
+  s_01ae823eace555::t_53d9c16620762c 104-105
+src/codec/md5.test.ts
+  s_01ae823eace555::t_0ecfe6a7a6ef60 4,35-42
+src/codec/md5.ts
+  s_01ae823eace555::t_dd1809de418512 33-37,41
+src/codec/tokentools.test.ts
+  s_01ae823eace555::t_5225a8501942e9 88-98
+src/codec/tokentools.ts
+  s_01ae823eace555::t_a29b87d5164e91 48
+src/color/colortools.test.ts
+  s_01ae823eace555::t_ad0ec67894bdb8 134-141
+src/json/pathtools.test.ts
+  s_01ae823eace555::t_8660c4a324e20d 43
+src/json/pathtools.ts
+  s_01ae823eace555::t_0897de22f33075 12,29-31
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "c12e814dfd6c7e44dae377a5d841b2779ff6f0ea",
+  "prompts": {},
+  "sessions": {
+    "s_01ae823eace555": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38751926-fbcb-4c06-a1f0-2a4420c690c9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
