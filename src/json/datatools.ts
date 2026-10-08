@@ -1,5 +1,5 @@
 import { InputError } from "../errors.js";
-import { locateJsonError } from "./json-error.js";
+import { parseJsonOrThrow } from "./parse.js";
 
 export interface DsvCell {
   text: string;
@@ -163,13 +163,7 @@ const isPlainObject = (v: unknown): v is Record<string, unknown> =>
  * "positional" without silently changing to-csv's header behaviour.
  */
 export function toRows(input: string): TableSource {
-  let value: unknown;
-  try {
-    value = JSON.parse(input);
-  } catch (error) {
-    const located = locateJsonError(input, error);
-    throw new InputError(located.message, located.detail);
-  }
+  const value: unknown = parseJsonOrThrow(input);
   if (!Array.isArray(value) || value.length === 0) {
     throw new InputError("Input must be a non-empty JSON array of objects or of arrays.");
   }

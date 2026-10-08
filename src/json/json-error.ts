@@ -1,10 +1,10 @@
 /**
  * Turns a JSON.parse failure into a message that shows WHERE the problem is.
  *
- * Callers: jsontools.parseJsonOrThrow and datatools.toRows — two independent
- * copies of the same throw, which is why this lives in a leaf module both can
- * import. It must never import from either of them: jsontools already imports
- * datatools, and closing that loop is a TDZ crash at startup.
+ * Callers: `parse.ts` (`parseJsonOrThrow`, shared by jsontools and datatools)
+ * and `pathtools.ts` (`excerptAt`). This file imports neither, which keeps it a
+ * leaf. It must never import from jsontools or datatools: jsontools already
+ * imports datatools, and closing that loop is a TDZ crash at startup.
  *
  * The result reaches the user's reply, never a log line — sanitizeError
  * collapses an InputError to its class name (`sanitizeError` in errors.ts). The excerpt fence
@@ -90,11 +90,13 @@ function windowLine(line: string, column: number): { text: string; caret: number
   return { text: head + line.slice(start, end) + tail, caret: head.length + (at - start) };
 }
 
-export function locateJsonError(input: string, error: unknown): LocatedError {
-  const native = error instanceof Error ? error.message : String(error);
-  const position = readPosition(native, input);
-  if (position === null) return { message: `Invalid JSON: ${native}` };
-
+/**
+ * The gutter-and-caret excerpt for a 1-based position: the error line with
+ * one neighbour either side, or a single windowed line when the error line
+ * exceeds MAX_LINE. Extracted unchanged from locateJsonError so pathtools
+ * can draw the same excerpt over a path string.
+ */
+export function excerptAt(input: string, position: { line: number; column: number }): { lines: string[]; caretLine: number } {
   const lines = input.split(/\r?\n/);
   const index = Math.min(
     Math.max(position.line - 1, 0),
@@ -129,13 +131,21 @@ export function locateJsonError(input: string, error: unknown): LocatedError {
       caretLine = rows.length - 1;
     }
   }
+  return { lines: rows, caretLine };
+}
+
+export function locateJsonError(input: string, error: unknown): LocatedError {
+  const native = error instanceof Error ? error.message : String(error);
+  const position = readPosition(native, input);
+  if (position === null) return { message: `Invalid JSON: ${native}` };
+  const { lines, caretLine } = excerptAt(input, position);
   return {
     message: `Invalid JSON: ${stripPosition(native)}`,
     detail: {
       kind: "excerpt",
       position,
       positionLine: `  line ${position.line}, column ${position.column}`,
-      lines: rows,
+      lines,
       caretLine,
     },
   };

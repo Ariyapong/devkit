@@ -1,16 +1,7 @@
 import YAML from "yaml";
 import { InputError } from "../errors.js";
 import { formatYamlError } from "./yamltools.js";
-import { locateJsonError } from "./json-error.js";
-
-function parseJsonOrThrow(input: string): unknown {
-  try {
-    return JSON.parse(input);
-  } catch (error) {
-    const located = locateJsonError(input, error);
-    throw new InputError(located.message, located.detail);
-  }
-}
+import { parseJsonOrThrow } from "./parse.js";
 
 export function formatJson(input: string): string {
   return JSON.stringify(parseJsonOrThrow(input), null, 2);
