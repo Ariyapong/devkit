@@ -1,6 +1,6 @@
 # @devwizards/devkit
 
-Pure TypeScript developer tools. Browser-safe subpaths `/json /api /time /codec /text /debug`; Discord renderers under `/discord`. Node >= 22. MIT.
+Pure TypeScript developer tools. Browser-safe subpaths `/json /api /time /codec /text /color /debug`; Discord renderers under `/discord`. Node >= 22. MIT.
 
 ## Install
 
@@ -16,16 +16,17 @@ Requires Node >= 22 (`engines.node` in `package.json`). npm warns (`EBADENGINE`)
 |---|---|
 | `@devwizards/devkit` (root) | Everything below, re-exported under one barrel — except `./discord` |
 | `@devwizards/devkit/errors` | `InputError`, `ErrorDetail`, `sanitizeError` alone — for a consumer that catches errors from one domain subpath without loading the root's whole graph |
-| `@devwizards/devkit/json` | JSON/YAML/DSV parsing, linting, table/CSV conversion, and located parse errors |
+| `@devwizards/devkit/json` | JSON/YAML/DSV parsing, linting, table/CSV conversion, located parse errors, and path query |
 | `@devwizards/devkit/api` | HTTP contract diffing, JSON Schema inference, and curl ↔ fetch conversion |
 | `@devwizards/devkit/time` | Epoch/ISO/cron parsing, timezone conversion, and time-string detection |
-| `@devwizards/devkit/codec` | Base64, URL encoding, JWT decoding, and UUID/random-index generation |
-| `@devwizards/devkit/text` | Semver, unit conversion, URL parsing, case conversion, counting, Unicode inspection, base conversion, diffing |
+| `@devwizards/devkit/codec` | Base64, URL encoding, JWT decoding, UUID/random-index generation, hashing and HMAC, random tokens, HTML/JSON/regex escaping |
+| `@devwizards/devkit/text` | Semver, unit conversion, URL parsing, case conversion, counting, Unicode inspection, base conversion, diffing, line tools |
+| `@devwizards/devkit/color` | Colour parsing and conversion (hex, rgb, hsl, CSS names), shades/tints/complement, WCAG contrast |
 | `@devwizards/devkit/debug` | Stack trace parsing, error-code lookup, ANSI stripping, HTTP status lookup |
 | `@devwizards/devkit/discord` | **Discord-only rendering, never for the web** — turns the compute above into fenced excerpts, `<t:…>` stamps and `-#` subtext |
 
-The root barrel re-exports every runtime export of the six domain subpaths
-(`/json /api /time /codec /text /debug`) plus `InputError`/`sanitizeError`.
+The root barrel re-exports every runtime export of the seven domain subpaths
+(`/json /api /time /codec /text /color /debug`) plus `InputError`/`sanitizeError`.
 It never re-exports anything from `./discord` — a function whose output
 contains Discord layout syntax is reachable only through
 `@devwizards/devkit/discord`.
@@ -113,7 +114,7 @@ a bug already found and fixed once:
 
 ## Browser safety
 
-The six domain subpaths and `./discord` are safe to bundle for a browser.
+The seven domain subpaths and `./discord` are safe to bundle for a browser.
 This is enforced, not just documented:
 
 - No subpath imports `node:*`, calls `require(`, or touches the identifiers
@@ -129,6 +130,13 @@ This is enforced, not just documented:
   preload that **deletes `Buffer` and `process` from `globalThis`** before
   any package code loads — proving the guarantee at runtime, not only in
   the import graph.
+- Hashing uses Web Crypto (`globalThis.crypto.subtle`) for the SHA family
+  and HMAC, and a vendored RFC 1321 MD5 (`src/codec/md5.ts`) because Web
+  Crypto has none. MD5 and SHA-1 are for checksums and interoperability,
+  not for new security uses. `crypto.subtle` exists only in a secure
+  context (https or localhost); elsewhere the hash functions reject with
+  the browser's `TypeError`, which is an environment fault, not an
+  `InputError`.
 - No hidden clocks: a zero-argument `Date.now()`/`new Date()` may appear
   only as a parameter default or on the right of `??` in an options
   fallback (`opts.nowMs ?? Date.now()`). Every function that needs "now"

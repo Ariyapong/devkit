@@ -1,6 +1,6 @@
 {
   "name": "@devwizards/devkit",
-  "version": "0.2.1",
+  "version": "0.3.0",
   "description": "Wizard level tools for developers: pure TypeScript helpers for JSON, APIs, time, codecs, text and debugging.",
   "license": "MIT",
   "type": "module",

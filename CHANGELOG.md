@@ -1,5 +1,36 @@
 # Changelog
 
+## 0.3.0 — unreleased
+
+### Changed
+
+- `validateJson` returns `{ kind, size? }` instead of the display string.
+  The 0.2 string (`✅ Valid JSON — object, 2 key(s)`) is now
+  `renderJsonSummary(validateJson(input))` in `/json`.
+- `validateJsonl` returns `{ ok: true, values, lines }` or
+  `{ ok: false, errors: { line, message }[], lines }` instead of
+  `{ ok, body }`, and reports every bad line. The 0.2 `body` is now
+  `renderJsonlReport(result)` in `/json`, which keeps the ten-line cap.
+
+### Added
+
+- `/color` subpath: `parseColor`, `hslToRgb`, `relatedColors`,
+  `searchColors`, `CSS_COLORS`, `relativeLuminance`, `contrastRatio`,
+  `wcagVerdicts`, `nearestAaPass` (ported from the bot).
+- `/codec`: `hashText`, `hashBytes`, `hmacText`, `checkHash`,
+  `HASH_ALGORITHMS` (md5, sha1, sha256, sha384, sha512; async, Web Crypto
+  plus a vendored MD5); `htmlEncode`, `htmlDecode` (ported);
+  `escapeJsonString`, `unescapeJsonString`, `escapeRegex`;
+  `generateTokens`, `alphabetFor` and the `TOKEN_*` limits (ported).
+- `/json`: `parsePath`, `queryJson`, `MAX_PATH_CHARS`;
+  `renderJsonlSummary` (its `ok` string, `✅ Valid JSON Lines — N line(s)`,
+  is new; its failure string is the 0.2 body's first line).
+- `/text`: `processLines`, `MAX_LINES_CHARS`.
+- `./discord`: `renderHashCheck` (moved from the bot).
+- `findJwt(text, { allowUnsecured: true })` also matches empty-signature
+  tokens.
+- The output-scan harness awaits async exports and has a self-test.
+
 ## 0.2.1 — 2026-09-28
 
 - Drop the `punycode` dependency. `parseUrl`'s `hostUnicode` now uses a
