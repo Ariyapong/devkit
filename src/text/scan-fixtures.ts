@@ -1,6 +1,7 @@
 import type { FixtureTable } from "../scan/output-scan.js";
 import { UNICODE_MAX_CODEPOINTS } from "./unicodetools.js";
 import { MAX_COUNT_CHARS } from "./counttools.js";
+import { MAX_LINES_CHARS } from "./linetools.js";
 
 export const fixtures: FixtureTable = {
   // ---- semvertools ----
@@ -93,4 +94,7 @@ export const fixtures: FixtureTable = {
   // ---- diff ----
   // No throw statement in diffTexts — createTwoFilesPatch never throws on plain strings.
   diffTexts: { returns: [["line1\nline2", "line1\nline2 changed"]], throws: "never" },
+
+  // ---- linetools ----
+  processLines: { returns: [["b\na\n", { sort: "asc", number: true }], ["", {}]], throws: [["x".repeat(MAX_LINES_CHARS + 1), {}]] },
 };

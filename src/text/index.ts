@@ -13,3 +13,5 @@ export type { NormForm, CodepointRow, InspectSummary, InspectResult } from "./un
 export { parseToBigInt, formatBases, PREFIX } from "./numbase.js";
 export type { Base } from "./numbase.js";
 export { diffTexts } from "./diff.js";
+export { processLines, MAX_LINES_CHARS } from "./linetools.js";
+export type { LineOps } from "./linetools.js";

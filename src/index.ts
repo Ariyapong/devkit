@@ -8,8 +8,8 @@ export { epochInfo, isoInfo, convertTz, explainCron, renderCron, parseStamp, ass
 export type { EpochInfo, IsoInfo, TimeHit, DetectOpts, InstantKind, ParseCtx, FormatSpec } from "./time/index.js";
 export { base64Encode, base64Decode, urlEncode, urlDecode, decodeJwt, makeUuids, randomIndex, findJwt, HASH_ALGORITHMS, hashText, hashBytes, hmacText, checkHash, htmlEncode, htmlDecode, escapeJsonString, unescapeJsonString, escapeRegex, generateTokens, alphabetFor, TOKEN_MIN_LENGTH, TOKEN_MAX_LENGTH, TOKEN_MAX_COUNT } from "./codec/index.js";
 export type { JwtInfo, Rng, HashAlgorithm, HashCheck, TokenType, TokenOptions, TokenResult } from "./codec/index.js";
-export { checkRange, compareVersions, renderCompare, convert, formatNumber, renderConversion, CATEGORIES, parseUrl, convertCase, allCases, tokenizeWords, CASE_ORDER, countText, renderCount, MAX_COUNT_CHARS, inspectUnicode, renderInspection, generalCategory, UNICODE_MAX_CODEPOINTS, parseToBigInt, formatBases, PREFIX, diffTexts } from "./text/index.js";
-export type { RangeCheck, VersionCompare, Unit, Category, UrlParts, CaseKey, CountResult, NormForm, CodepointRow, InspectSummary, InspectResult, Base } from "./text/index.js";
+export { checkRange, compareVersions, renderCompare, convert, formatNumber, renderConversion, CATEGORIES, parseUrl, convertCase, allCases, tokenizeWords, CASE_ORDER, countText, renderCount, MAX_COUNT_CHARS, inspectUnicode, renderInspection, generalCategory, UNICODE_MAX_CODEPOINTS, parseToBigInt, formatBases, PREFIX, diffTexts, processLines, MAX_LINES_CHARS } from "./text/index.js";
+export type { RangeCheck, VersionCompare, Unit, Category, UrlParts, CaseKey, CountResult, NormForm, CodepointRow, InspectSummary, InspectResult, Base, LineOps } from "./text/index.js";
 export { parseStackTrace, lookupErrCode, scanErrTokens, allErrCodes, stripAnsi, httpStatus } from "./debug/index.js";
 export type { StackParse, Frame, StackLanguage, ErrInfo } from "./debug/index.js";
 export { parseColor, hslToRgb, relatedColors, searchColors, CSS_COLORS, relativeLuminance, contrastRatio, wcagVerdicts, nearestAaPass } from "./color/index.js";
