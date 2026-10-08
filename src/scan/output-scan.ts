@@ -41,47 +41,77 @@ export function collectStrings(value: unknown, out: string[] = [], depth = 0): s
   return out;
 }
 
+/** Awaits a thenable result, passes anything else through. */
+async function settle(value: unknown): Promise<unknown> {
+  return value instanceof Promise || (typeof value === "object" && value !== null && typeof (value as { then?: unknown }).then === "function")
+    ? await (value as Promise<unknown>)
+    : value;
+}
+
+/**
+ * Spec rule 4.2 for ONE export: every `returns` case must return (or
+ * resolve), every string leaf of its value is scanned; every `throws` case
+ * must throw (or reject) an InputError whose message is scanned. Returns the
+ * violations as messages so the harness can assert on them and the
+ * self-test can prove each failing path fails.
+ */
+export async function checkEntry(
+  name: string,
+  fn: (...args: unknown[]) => unknown,
+  entry: FixtureEntry,
+): Promise<string[]> {
+  const out: string[] = [];
+  for (const args of entry.returns) {
+    let value: unknown;
+    try {
+      value = await settle(fn(...args));
+    } catch (error) {
+      out.push(`${name}${stringifyArgs(args)} was tagged "returns" but threw: ${String(error)}`);
+      continue;
+    }
+    for (const s of collectStrings(value)) {
+      const bad = findForbidden(s);
+      if (bad !== null) out.push(`${name}${stringifyArgs(args)} emitted ${bad} in a domain subpath`);
+    }
+  }
+  if (entry.throws !== "never") {
+    for (const args of entry.throws) {
+      let thrown: unknown = null;
+      try {
+        await settle(fn(...args));
+      } catch (error) {
+        thrown = error;
+      }
+      if (thrown === null) {
+        out.push(`${name}${stringifyArgs(args)} was tagged "throws" but returned`);
+        continue;
+      }
+      if (!(thrown instanceof InputError)) {
+        out.push(`${name}${stringifyArgs(args)} threw a non-InputError: ${String(thrown)}`);
+        continue;
+      }
+      const bad = findForbidden(thrown.message);
+      if (bad !== null) out.push(`${name}${stringifyArgs(args)} threw a message containing ${bad}`);
+    }
+  }
+  return out;
+}
+
 /**
  * Spec rule 4.2, made mechanical: EVERY function export of a domain must
- * have a fixture entry (missing ⇒ fail), every case must take the path its
- * tag says, every string leaf of a return and every thrown message is
- * scanned for Discord layout syntax, and every throw must be an InputError.
+ * have a fixture entry (missing ⇒ fail), and checkEntry must report nothing
+ * for it. Async exports are awaited; a rejection counts as a throw.
  */
 export function registerOutputScan(domain: string, mod: Record<string, unknown>, fixtures: FixtureTable): void {
   const fnExports = Object.entries(mod).filter(([, v]) => typeof v === "function");
   for (const [name, fn] of fnExports) {
-    test(`[${domain}] output scan: ${name}`, () => {
+    test(`[${domain}] output scan: ${name}`, async () => {
       const entry = fixtures[name];
       assert.ok(entry, `no scan fixture for export "${name}" — add it to ${domain}/scan-fixtures.ts`);
       assert.ok(entry.returns.length > 0, `${name}: at least one returns case`);
-      const call = fn as (...args: unknown[]) => unknown;
-      for (const args of entry.returns) {
-        let out: unknown;
-        try {
-          out = call(...args);
-        } catch (error) {
-          assert.fail(`${name}${stringifyArgs(args)} was tagged "returns" but threw: ${String(error)}`);
-        }
-        for (const s of collectStrings(out)) {
-          const bad = findForbidden(s);
-          assert.equal(bad, null, `${name}${stringifyArgs(args)} emitted ${bad} in a domain subpath`);
-        }
-      }
-      if (entry.throws !== "never") {
-        assert.ok(entry.throws.length > 0, `${name}: throws must be non-empty or "never"`);
-        for (const args of entry.throws) {
-          let thrown: unknown = null;
-          try {
-            call(...args);
-          } catch (error) {
-            thrown = error;
-          }
-          assert.ok(thrown !== null, `${name}${stringifyArgs(args)} was tagged "throws" but returned`);
-          assert.ok(thrown instanceof InputError, `${name}${stringifyArgs(args)} threw a non-InputError: ${String(thrown)}`);
-          const bad = findForbidden((thrown as InputError).message);
-          assert.equal(bad, null, `${name}${stringifyArgs(args)} threw a message containing ${bad}`);
-        }
-      }
+      if (entry.throws !== "never") assert.ok(entry.throws.length > 0, `${name}: throws must be non-empty or "never"`);
+      const violations = await checkEntry(name, fn as (...args: unknown[]) => unknown, entry);
+      assert.deepEqual(violations, []);
     });
   }
   test(`[${domain}] output scan: no fixture names a non-existent export`, () => {
