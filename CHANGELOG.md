@@ -4,12 +4,12 @@
 
 ### Changed
 
-- `validateJson` returns `{ kind, size? }` instead of the display string.
+- `validateJson` returns `{ kind, size? }` instead of the display string (type `JsonSummary`).
   The 0.2 string (`✅ Valid JSON — object, 2 key(s)`) is now
   `renderJsonSummary(validateJson(input))` in `/json`.
 - `validateJsonl` returns `{ ok: true, values, lines }` or
   `{ ok: false, errors: { line, message }[], lines }` instead of
-  `{ ok, body }`, and reports every bad line. The 0.2 `body` is now
+  `{ ok, body }`, and reports every bad line (type `JsonlResult`). The 0.2 `body` is now
   `renderJsonlReport(result)` in `/json`, which keeps the ten-line cap.
 
 ### Added
@@ -29,6 +29,7 @@
 - `./discord`: `renderHashCheck` (moved from the bot).
 - `findJwt(text, { allowUnsecured: true })` also matches empty-signature
   tokens.
+- Types: `HashAlgorithm`, `HashCheck`, `TokenType`, `TokenOptions`, `TokenResult`, `PathSegment`, `LineOps`, `JsonKind`, `ColorInfo`, `WcagVerdicts`.
 - The output-scan harness awaits async exports and has a self-test.
 
 ## 0.2.1 — 2026-09-28

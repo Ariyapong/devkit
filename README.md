@@ -133,9 +133,12 @@ This is enforced, not just documented:
 - Hashing uses Web Crypto (`globalThis.crypto.subtle`) for the SHA family
   and HMAC, and a vendored RFC 1321 MD5 (`src/codec/md5.ts`) because Web
   Crypto has none. MD5 and SHA-1 are for checksums and interoperability,
-  not for new security uses. `crypto.subtle` exists only in a secure
-  context (https or localhost); elsewhere the hash functions reject with
-  the browser's `TypeError`, which is an environment fault, not an
+  not for new security uses. The vendored MD5 runs synchronously on the
+  calling thread at roughly 50 MB/s; hash multi-hundred-megabyte files
+  with it in a Worker. `crypto.subtle` exists only in a secure
+  context (https or localhost); elsewhere the SHA and HMAC-SHA paths
+  reject with the browser's `TypeError` (MD5 and HMAC-MD5 are vendored
+  and unaffected), which is an environment fault, not an
   `InputError`.
 - No hidden clocks: a zero-argument `Date.now()`/`new Date()` may appear
   only as a parameter default or on the right of `??` in an options
