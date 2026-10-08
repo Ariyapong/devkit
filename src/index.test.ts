@@ -14,7 +14,7 @@ test("root re-exports every runtime export of every domain, and nothing from ./d
   for (const [domain, mod] of Object.entries({ json, api, time, codec, text, debug, color })) {
     for (const name of Object.keys(mod)) assert.ok(rootNames.has(name), `${domain}.${name} missing from root`);
   }
-  for (const name of ["renderErrorDetail", "renderJwt", "tidyStackTrace", "renderCompact", "renderUrl", "renderCheck"]) {
+  for (const name of ["renderErrorDetail", "renderJwt", "tidyStackTrace", "renderCompact", "renderUrl", "renderCheck", "renderHashCheck"]) {
     assert.equal(rootNames.has(name), false, `${name} must not be reachable from the root`);
   }
   assert.ok(rootNames.has("InputError") && rootNames.has("sanitizeError"));

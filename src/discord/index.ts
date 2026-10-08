@@ -6,3 +6,4 @@ export { renderUrl } from "./url-render.js";
 export { renderCheck } from "./semver-render.js";
 export { tidyStackTrace, renderStackReply } from "./stack-render.js";
 export type { StackTidy } from "./stack-render.js";
+export { renderHashCheck } from "./hash-render.js";
