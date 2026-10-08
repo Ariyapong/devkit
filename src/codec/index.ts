@@ -5,3 +5,5 @@ export type { Rng } from "./random.js";
 export { findJwt } from "./find-jwt.js";
 export { HASH_ALGORITHMS, hashText, hashBytes, hmacText, checkHash } from "./hashtools.js";
 export type { HashAlgorithm, HashCheck } from "./hashtools.js";
+export { htmlEncode, htmlDecode } from "./htmltools.js";
+export { escapeJsonString, unescapeJsonString, escapeRegex } from "./escape.js";

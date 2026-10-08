@@ -30,4 +30,12 @@ export const fixtures: FixtureTable = {
   hashBytes: { returns: [[new Uint8Array([1, 2, 3]), "sha512"]], throws: [[new Uint8Array(), "nope"]] },
   hmacText: { returns: [["abc", "k", "sha256"], ["abc", "k", "md5"]], throws: [["abc", "  ", "sha256"], ["abc", "k", "sha3"]] },
   checkHash: { returns: [["abc", "md5", "900150983cd24fb0d6963f7d28e17f72"], ["abc", "sha256", "00", "k"]], throws: [["abc", "md5", "zz"]] },
+  // Pure replace() calls; no throw statement in either.
+  htmlEncode: { returns: [["<a href=\"x\">&'</a>"]], throws: "never" },
+  htmlDecode: { returns: [["&lt;b&gt; &amp; &#39; &#x1F600; &nosuch;"]], throws: "never" },
+  // JSON.stringify never throws on a string.
+  escapeJsonString: { returns: [["a\"b\\c\n"]], throws: "never" },
+  unescapeJsonString: { returns: [['a\\"b'], ["plain"]], throws: [["\\q"]] },
+  // A single replace(); no throw statement.
+  escapeRegex: { returns: [["a.b*c"]], throws: "never" },
 };
