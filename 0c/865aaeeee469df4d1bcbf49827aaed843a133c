@@ -1,0 +1,37 @@
+src/codec/find-jwt.test.ts
+  s_01ae823eace555::t_0ca023383da90c 29-36
+src/codec/find-jwt.ts
+  s_01ae823eace555::t_80c217ad909b94 2-3,5,7-9
+src/codec/scan-fixtures.ts
+  s_01ae823eace555::t_e4632f056ecf70 27
+src/index.ts
+  s_01ae823eace555::t_beb4ca7d3edd6b 3-4
+src/json/datatools.test.ts
+  s_01ae823eace555::t_991bc63cb69cb5 3,151-156,162-172,179,181-186
+src/json/datatools.ts
+  s_01ae823eace555::t_4ad6fa8d84ea09 196-201,209,214,217-233
+src/json/index.ts
+  s_01ae823eace555::t_869fc1e6b32171 1-2,7-8
+src/json/jsontools.test.ts
+  s_01ae823eace555::t_d77df5708a9e29 10,24-38
+src/json/jsontools.ts
+  s_01ae823eace555::t_34a911717d3bc4 14-21,23-33
+src/json/scan-fixtures.ts
+  s_01ae823eace555::t_50fc36d8c98f7b 11-14
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "0c865aaeeee469df4d1bcbf49827aaed843a133c",
+  "prompts": {},
+  "sessions": {
+    "s_01ae823eace555": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38751926-fbcb-4c06-a1f0-2a4420c690c9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
