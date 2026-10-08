@@ -30,10 +30,15 @@ function rotl(x: number, n: number): number {
   return (x << n) | (x >>> (32 - n));
 }
 
+/** Padded message length: data + 0x80 + 8-byte length, rounded up to 64. Safe above 2 GiB. */
+export function paddedLength(n: number): number {
+  return Math.ceil((n + 9) / 64) * 64;
+}
+
 export function md5(bytes: Uint8Array): Uint8Array {
   // Padding: 0x80, zeros to 56 mod 64, then the bit length as a 64-bit LE int.
   const bitLen = bytes.length * 8;
-  const padded = new Uint8Array(((bytes.length + 8) >> 6 << 6) + 64);
+  const padded = new Uint8Array(paddedLength(bytes.length));
   padded.set(bytes);
   padded[bytes.length] = 0x80;
   const view = new DataView(padded.buffer);

@@ -45,7 +45,7 @@ export interface TokenResult {
 
 /**
  * Generate `count` random tokens of `length` characters. Each character is
- * drawn with an unbiased index via `rng` (crypto.randomInt) — never
+ * drawn with an unbiased index via `rng` (Web Crypto `getRandomValues`, via `cryptoRandomInt`) — never
  * `randomBytes % n`, which biases when the alphabet doesn't divide 256.
  */
 export function generateTokens(opts: TokenOptions, rng: Rng = cryptoRandomInt): TokenResult {

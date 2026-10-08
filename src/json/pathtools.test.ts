@@ -40,6 +40,7 @@ test("parsePath: rejected forms, with the caret column", () => {
     ["a]", 2],
     ["a\nb", 2], // control character
     ["a\tb", 2],
+    ["a\u0000b", 2], // NUL
   ];
   for (const [path, column] of table) {
     assert.throws(

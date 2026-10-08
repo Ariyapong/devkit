@@ -9,7 +9,7 @@ export const MAX_PATH_CHARS = 1024;
 
 /** Excerpt over the path with C0 controls shown as spaces, so it is always one row. */
 function pathDetail(path: string, column: number): ErrorDetail {
-  const shown = path.replace(/[\u0000-\u001f]/g, " ");
+  const shown = Array.from(path, (ch) => (ch.charCodeAt(0) < 0x20 ? " " : ch)).join("");
   const { lines, caretLine } = excerptAt(shown, { line: 1, column });
   return { kind: "excerpt", position: { line: 1, column }, lines, caretLine };
 }
@@ -26,8 +26,9 @@ function syntaxError(path: string, at: number): InputError {
  */
 function parseSegments(path: string): { segments: PathSegment[]; starts: number[] } {
   if (path.length > MAX_PATH_CHARS) throw new InputError("Path is too long.");
-  const control = /[\u0000-\u001f]/.exec(path);
-  if (control) throw syntaxError(path, control.index);
+  for (let k = 0; k < path.length; k++) {
+    if (path.charCodeAt(k) < 0x20) throw syntaxError(path, k);
+  }
 
   const segments: PathSegment[] = [];
   const starts: number[] = [];

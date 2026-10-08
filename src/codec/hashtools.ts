@@ -101,7 +101,8 @@ export interface HashCheck {
  * HMAC instead of a plain hash; length-hint logic is unaffected, since HMAC
  * output is the same width as the underlying hash. Error order: hex form of
  * `expected` (the bot's first check), then the algorithm, then the blank key
- * raised inside hmacText.
+ * raised inside hmacText. The comparison is not constant-time; this is a
+ * display tool, not a server-side MAC verifier.
  */
 export async function checkHash(
   text: string,

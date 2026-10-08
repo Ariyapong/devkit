@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { createHash, randomBytes } from "node:crypto";
-import { md5 } from "./md5.js";
+import { md5, paddedLength } from "./md5.js";
 import { bytesToHex, utf8ToBytes } from "../shared/bytes.js";
 
 const hex = (b: Uint8Array) => bytesToHex(md5(b));
@@ -31,4 +31,12 @@ test("md5: 20,000 random inputs up to 4 KB match node:crypto", () => {
     const b = new Uint8Array(randomBytes(Math.floor(Math.random() * 4096)));
     assert.equal(hex(b), createHash("md5").update(b).digest("hex"));
   }
+});
+
+test("paddedLength: matches the old formula and is correct above 2 GiB", () => {
+  for (let n = 0; n <= 200; n++) {
+    assert.equal(paddedLength(n), ((n + 8) >> 6 << 6) + 64, String(n));
+  }
+  assert.equal(paddedLength(2 ** 31), 2 ** 31 + 64);
+  assert.equal(paddedLength(2 ** 32 + 5), 4294967360);
 });

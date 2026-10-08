@@ -131,3 +131,11 @@ test("CSS_COLORS: every entry round-trips through parseColor and has a name", ()
   // Alias ordering: first name in the table wins (moved from the bot).
   assert.equal(parseColor("cyan").name, "aqua");
 });
+
+test("parseColor: exact error messages", () => {
+  const msg = (input: string, m: string) =>
+    assert.throws(() => parseColor(input), (e) => e instanceof InputError && e.message === m);
+  msg("rgb(999, 0, 0)", "RGB components must be 0-255.");
+  msg("hsl(10, 200%, 50%)", "HSL saturation and lightness must be 0-100.");
+  msg("bluish", 'Use "#rrggbb", "#rgb", "rgb(r, g, b)", "hsl(h, s%, l%)", or a CSS color name like "coral".');
+});

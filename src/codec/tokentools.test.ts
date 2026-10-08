@@ -85,3 +85,14 @@ test("generateTokens: the default RNG stays inside the alphabet over 1,000 token
     }
   }
 });
+
+test("generateTokens: exact limit messages", () => {
+  assert.throws(
+    () => generateTokens({ type: "hex", length: 2, count: 1, unambiguous: false }),
+    (e) => e instanceof InputError && e.message === "length must be 8–128 characters.",
+  );
+  assert.throws(
+    () => generateTokens({ type: "hex", length: 16, count: 0, unambiguous: false }),
+    (e) => e instanceof InputError && e.message === "count must be 1–10.",
+  );
+});
