@@ -48,7 +48,7 @@ function zoneOfImport(fromFile: string, specifier: string): string | null {
   return zoneOf(target);
 }
 
-const DOMAINS = new Set(["json", "api", "time", "codec", "text", "debug"]);
+const DOMAINS = new Set(["json", "api", "time", "codec", "text", "debug", "color"]);
 
 function importAllowed(fromZone: string, toZone: string): boolean {
   if (fromZone === "errors" || fromZone === "shared") return false;

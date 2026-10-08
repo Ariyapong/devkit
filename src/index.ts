@@ -12,3 +12,5 @@ export { checkRange, compareVersions, renderCompare, convert, formatNumber, rend
 export type { RangeCheck, VersionCompare, Unit, Category, UrlParts, CaseKey, CountResult, NormForm, CodepointRow, InspectSummary, InspectResult, Base } from "./text/index.js";
 export { parseStackTrace, lookupErrCode, scanErrTokens, allErrCodes, stripAnsi, httpStatus } from "./debug/index.js";
 export type { StackParse, Frame, StackLanguage, ErrInfo } from "./debug/index.js";
+export { parseColor, hslToRgb, relatedColors, searchColors, CSS_COLORS, relativeLuminance, contrastRatio, wcagVerdicts, nearestAaPass } from "./color/index.js";
+export type { ColorInfo, WcagVerdicts } from "./color/index.js";

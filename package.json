@@ -17,6 +17,7 @@
     "./time":    { "types": "./dist/time/index.d.ts",    "default": "./dist/time/index.js" },
     "./codec":   { "types": "./dist/codec/index.d.ts",   "default": "./dist/codec/index.js" },
     "./text":    { "types": "./dist/text/index.d.ts",    "default": "./dist/text/index.js" },
+    "./color":   { "types": "./dist/color/index.d.ts",   "default": "./dist/color/index.js" },
     "./debug":   { "types": "./dist/debug/index.d.ts",   "default": "./dist/debug/index.js" },
     "./discord": { "types": "./dist/discord/index.d.ts", "default": "./dist/discord/index.js" }
   },
