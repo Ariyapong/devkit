@@ -1,0 +1,21 @@
+src/scan/output-scan.test.ts
+  s_97934a422320d4::t_1af79923c8cde5 3-4,18-48
+src/scan/output-scan.ts
+  s_97934a422320d4::t_5284d14c4bbb2a 44-99,102-103,108,112-114
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "18129db594bc0b6ee8140a955dbaaf001b516fe9",
+  "prompts": {},
+  "sessions": {
+    "s_97934a422320d4": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a848319820aae65d6",
+        "model": "unknown"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
