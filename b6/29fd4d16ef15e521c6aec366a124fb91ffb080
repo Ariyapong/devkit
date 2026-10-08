@@ -1,0 +1,25 @@
+src/json/datatools.ts
+  s_01ae823eace555::t_9c14de61f7a863 2,166
+src/json/json-error.ts
+  s_01ae823eace555::t_15b4f687837d44 4-7,93-99,134-141,148
+src/json/jsontools.ts
+  s_01ae823eace555::t_1eb96f129ded17 4
+src/json/parse.ts
+  s_01ae823eace555::t_bbfe1e743fde55 1-12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "b629fd4d16ef15e521c6aec366a124fb91ffb080",
+  "prompts": {},
+  "sessions": {
+    "s_01ae823eace555": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "38751926-fbcb-4c06-a1f0-2a4420c690c9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
