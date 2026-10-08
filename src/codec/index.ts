@@ -3,3 +3,5 @@ export type { JwtInfo } from "./codec.js";
 export { randomIndex } from "./random.js";
 export type { Rng } from "./random.js";
 export { findJwt } from "./find-jwt.js";
+export { HASH_ALGORITHMS, hashText, hashBytes, hmacText, checkHash } from "./hashtools.js";
+export type { HashAlgorithm, HashCheck } from "./hashtools.js";

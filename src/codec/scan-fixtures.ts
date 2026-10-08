@@ -25,4 +25,9 @@ export const fixtures: FixtureTable = {
   randomIndex: { returns: [[3]], throws: "never" },
   // JWT_RE.exec(text) on a string input never throws, regardless of content.
   findJwt: { returns: [["nothing to see here"], [`here: ${SAMPLE_JWT} thanks`]], throws: "never" },
+  // Async: the scan awaits these (Task 1). Unknown algorithm is the throw path.
+  hashText: { returns: [["abc", "sha256"], ["", "md5"]], throws: [["abc", "sha3"]] },
+  hashBytes: { returns: [[new Uint8Array([1, 2, 3]), "sha512"]], throws: [[new Uint8Array(), "nope"]] },
+  hmacText: { returns: [["abc", "k", "sha256"], ["abc", "k", "md5"]], throws: [["abc", "  ", "sha256"], ["abc", "k", "sha3"]] },
+  checkHash: { returns: [["abc", "md5", "900150983cd24fb0d6963f7d28e17f72"], ["abc", "sha256", "00", "k"]], throws: [["abc", "md5", "zz"]] },
 };
