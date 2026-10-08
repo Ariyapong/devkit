@@ -1,0 +1,29 @@
+src/codec/index.ts
+  s_9c7616b58a3ae3::t_0191a4b1ccc35f 10-11
+src/codec/random.ts
+  s_9c7616b58a3ae3::t_af5687a93ecb26 8
+src/codec/scan-fixtures.ts
+  s_9c7616b58a3ae3::t_822c5ac5ed417f 41-43
+src/codec/tokentools.test.ts
+  s_9c7616b58a3ae3::t_162c150d4e80ca 1-87
+src/codec/tokentools.ts
+  s_9c7616b58a3ae3::t_593d2d91300244 1-70
+src/index.ts
+  s_9c7616b58a3ae3::t_c8dda8597ec9a1 9-10
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "73f81ed92537f4b92828297f2d8d6b28b8518cfb",
+  "prompts": {},
+  "sessions": {
+    "s_9c7616b58a3ae3": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "agent-a8dae5767b411946d",
+        "model": "unknown"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
