@@ -1,0 +1,14 @@
+CHANGELOG.md
+  h_2da2e20112b070 3
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "7ac5debc14f1c9cc2287a24b8f2d7bec1fea19bd",
+  "prompts": {},
+  "humans": {
+    "h_2da2e20112b070": {
+      "author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
