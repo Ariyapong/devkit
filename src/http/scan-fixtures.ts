@@ -10,4 +10,14 @@ export const fixtures: FixtureTable = {
     returns: [[{ domain: null, path: null, expires: null, maxAge: 60, secure: false, httpOnly: false, sameSite: null, sameSiteRaw: null, partitioned: false, priority: null, unknown: [], duplicates: [] }, 1_800_000_000_000]],
     throws: "never",
   },
+  // Pure checks over a ParsedCookie; no throw statement. Date.now() is only the nowMs default.
+  auditSetCookie: {
+    returns: [[{ name: "sid", value: "1", bytes: 5, attributes: { domain: null, path: null, expires: null, maxAge: null, secure: false, httpOnly: false, sameSite: null, sameSiteRaw: null, partitioned: false, priority: null, unknown: [], duplicates: [] }, lifetime: { kind: "session" }, valueInfo: { kind: "plain", decoded: null, layers: [], quoted: false }, audit: [], source: { line: 1, raw: "sid=1" } }]],
+    throws: "never",
+  },
+  // Pure checks over name, value and size; no throw statement.
+  auditCookieHeader: {
+    returns: [[{ name: "sid", value: "1", bytes: 5, attributes: null, lifetime: null, valueInfo: { kind: "plain", decoded: null, layers: [], quoted: false }, audit: [], source: { line: 1, raw: "sid=1" } }]],
+    throws: "never",
+  },
 };
