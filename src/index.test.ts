@@ -8,10 +8,11 @@ import * as codec from "./codec/index.js";
 import * as text from "./text/index.js";
 import * as debug from "./debug/index.js";
 import * as color from "./color/index.js";
+import * as http from "./http/index.js";
 
 test("root re-exports every runtime export of every domain, and nothing from ./discord", () => {
   const rootNames = new Set(Object.keys(root));
-  for (const [domain, mod] of Object.entries({ json, api, time, codec, text, debug, color })) {
+  for (const [domain, mod] of Object.entries({ json, api, time, codec, text, debug, color, http })) {
     for (const name of Object.keys(mod)) assert.ok(rootNames.has(name), `${domain}.${name} missing from root`);
   }
   for (const name of ["renderErrorDetail", "renderJwt", "tidyStackTrace", "renderCompact", "renderUrl", "renderCheck", "renderHashCheck"]) {

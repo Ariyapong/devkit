@@ -9,8 +9,8 @@ import { fileURLToPath } from "node:url";
 
 const SRC = resolve(dirname(fileURLToPath(import.meta.url)));
 const FORBIDDEN_IDENTIFIERS = new Set(["Buffer", "process", "__dirname", "require", "console"]);
-/** The six runtime dependencies of package.json — a new one is a design decision, not a convenience (design §2). */
-const ALLOWED_PACKAGES = new Set(["cron-parser", "cronstrue", "diff", "luxon", "semver", "yaml"]);
+/** The seven runtime dependencies of package.json — a new one is a design decision, not a convenience (design §2). */
+const ALLOWED_PACKAGES = new Set(["cron-parser", "cronstrue", "diff", "luxon", "semver", "ua-parser-js", "yaml"]);
 const CLOCK_MARKER = "// clock: intentional";
 
 type TS = typeof import("typescript");
@@ -48,7 +48,7 @@ function zoneOfImport(fromFile: string, specifier: string): string | null {
   return zoneOf(target);
 }
 
-const DOMAINS = new Set(["json", "api", "time", "codec", "text", "debug", "color"]);
+const DOMAINS = new Set(["json", "api", "time", "codec", "text", "debug", "color", "http"]);
 
 function importAllowed(fromZone: string, toZone: string): boolean {
   if (fromZone === "errors" || fromZone === "shared") return false;
