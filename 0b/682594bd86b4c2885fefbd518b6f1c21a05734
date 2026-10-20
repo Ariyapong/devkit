@@ -1,0 +1,31 @@
+src/color/colortools.test.ts
+  s_497dfabe7bcdaa::t_53629973e16e94 142-164
+src/color/colortools.ts
+  s_15859126e56f4f::t_e8cffbd6e7d7b5 4,18-19,69-143,151,153-155,157-161,165-167,169,183
+src/color/scan-fixtures.ts
+  s_497dfabe7bcdaa::t_fee721907bc59d 8
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "0b682594bd86b4c2885fefbd518b6f1c21a05734",
+  "prompts": {},
+  "sessions": {
+    "s_15859126e56f4f": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "77cd53be-20df-4f1e-a60e-dcf5cf98c27c",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    },
+    "s_497dfabe7bcdaa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d60e33-6a8f-4555-b442-c941ed1c43b9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
