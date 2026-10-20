@@ -5,7 +5,7 @@ const RED = parseColor("#ff0000");
 const WHITE = parseColor("#ffffff");
 
 export const fixtures: FixtureTable = {
-  parseColor: { returns: [["#ff0000"], ["coral"], ["rgb(1, 2, 3)"], ["hsl(10, 20%, 30%)"]], throws: [["bluish"], ["rgb(999, 0, 0)"]] },
+  parseColor: { returns: [["#ff0000"], ["coral"], ["rgb(1, 2, 3)"], ["hsl(10, 20%, 30%)"], ["rgb(255 0 0 / 50%)"], ["#ff000080"], ["transparent"]], throws: [["bluish"], ["rgb(999, 0, 0)"], ["rgba(0,0,0,2)"]] },
   // Pure arithmetic over numbers; no throw statement.
   hslToRgb: { returns: [[0, 100, 50]], throws: "never" },
   relatedColors: { returns: [[RED]], throws: "never" },
