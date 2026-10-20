@@ -1,0 +1,21 @@
+src/http/cookie-parse.test.ts
+  s_497dfabe7bcdaa::t_bbf95b8125f31a 40-45
+src/http/cookie-parse.ts
+  s_497dfabe7bcdaa::t_0d4171e6dc656b 110
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "2c250966357edb0246d03dc1362f484297684f86",
+  "prompts": {},
+  "sessions": {
+    "s_497dfabe7bcdaa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d60e33-6a8f-4555-b442-c941ed1c43b9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
