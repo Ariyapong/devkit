@@ -20,4 +20,10 @@ export const fixtures: FixtureTable = {
     returns: [[{ name: "sid", value: "1", bytes: 5, attributes: null, lifetime: null, valueInfo: { kind: "plain", decoded: null, layers: [], quoted: false }, audit: [], source: { line: 1, raw: "sid=1" } }]],
     throws: "never",
   },
+  // Plain string splitting; unreadable input yields empty or partial rows, and there is no throw statement.
+  parseCookieHeader: { returns: [["Cookie: sid=1; theme=dark"], [""]], throws: "never" },
+  // Plain string splitting plus pure helpers; there is no throw statement.
+  parseSetCookie: { returns: [["sid=1; Path=/; Secure", { nowMs: 1_800_000_000_000 }], ["", { nowMs: 1_800_000_000_000 }]], throws: "never" },
+  // Index scanning over a string; there is no throw statement.
+  splitSetCookieHeaders: { returns: [["a=1, b=2"], [""]], throws: "never" },
 };
