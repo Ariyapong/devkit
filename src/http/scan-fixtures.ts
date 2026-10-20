@@ -31,6 +31,10 @@ export const fixtures: FixtureTable = {
     returns: [["Set-Cookie: a=1; Secure", { nowMs: 1_800_000_000_000 }], ["a=1; a=2"], [""]],
     throws: [["a".repeat(1_000_001)]],
   },
+  // Pure string joins over parsed rows; there is no throw statement.
+  toCookieHeader: { returns: [[[]]], throws: "never" },
+  toNetscapeJar: { returns: [[[]]], throws: "never" },
+  cookiesToJson: { returns: [[{ kind: "empty", cookies: [], audit: [], totalBytes: 0, notes: [] }]], throws: "never" },
   parseNetscapeJar: {
     returns: [["# Netscape HTTP Cookie File\n#HttpOnly_.x.test\tTRUE\t/\tTRUE\t0\ta\t1", { nowMs: 1_800_000_000_000 }]],
     throws: [["a\tb"]],
