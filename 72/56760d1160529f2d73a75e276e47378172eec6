@@ -1,0 +1,27 @@
+src/codec/index.ts
+  s_497dfabe7bcdaa::t_db6d720da7c442 10
+src/codec/scan-fixtures.ts
+  s_497dfabe7bcdaa::t_45707188eff1ec 43
+src/codec/tokentools.test.ts
+  s_497dfabe7bcdaa::t_994945f49beb55 3,99-105
+src/codec/tokentools.ts
+  s_497dfabe7bcdaa::t_c5870dd492bb82 19-20,54-56
+src/index.ts
+  s_497dfabe7bcdaa::t_899cf7ea64242b 9
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "7256760d1160529f2d73a75e276e47378172eec6",
+  "prompts": {},
+  "sessions": {
+    "s_497dfabe7bcdaa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d60e33-6a8f-4555-b442-c941ed1c43b9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
