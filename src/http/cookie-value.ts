@@ -101,9 +101,8 @@ function formText(text: string): string {
 
 /** One peeled layer: the kind, the new text, and whether peeling stops here. */
 function peel(text: string): { kind: CookieValueKind; text: string; terminal: boolean } | null {
-  // A form is checked first so its percent escapes are decoded per field, not across the whole string.
-  if (isForm(text)) return { kind: "form", text: formText(text), terminal: true };
-  if (PERCENT_ESCAPE.test(text)) {
+  // Form-shaped text skips the URL-decode step so its escapes are decoded per field, not across the string.
+  if (!isForm(text) && PERCENT_ESCAPE.test(text)) {
     const decoded = tryDecodeUri(text);
     if (decoded !== null && decoded !== text) return { kind: "url-encoded", text: decoded, terminal: false };
   }
@@ -111,6 +110,7 @@ function peel(text: string): { kind: CookieValueKind; text: string; terminal: bo
   if (isSigned(text)) return { kind: "signed", text, terminal: true };
   const json = parseJsonContainer(text);
   if (json !== null) return { kind: "json", text: JSON.stringify(json, null, 2), terminal: true };
+  if (isForm(text)) return { kind: "form", text: formText(text), terminal: true };
   if (text.length >= MIN_BASE64_CHARS) {
     const bytes = base64Bytes(text);
     const decoded = bytes === null ? null : utf8Text(bytes);

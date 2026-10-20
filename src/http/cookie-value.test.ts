@@ -37,6 +37,11 @@ test("describeCookieValue: each kind", () => {
   assert.deepEqual(describeCookieValue("a=1&b=x%20y"), { kind: "form", decoded: "a=1\nb=x y", layers: ["form"], quoted: false });
   assert.deepEqual(describeCookieValue("%7B%22a%22%3A1%7D").layers, ["url-encoded", "json"]);
 });
+test("describeCookieValue: json, jwt and signed values holding & are not forms", () => {
+  assert.deepEqual(describeCookieValue('{"u":"https://x.test/?a=1&b=2"}').layers, ["json"]);
+  assert.deepEqual(describeCookieValue('["a=1&b=2"]').layers, ["json"]);
+  assert.deepEqual(describeCookieValue("s:a=1&b=2.sig").layers, ["signed"]);
+});
 test("describeCookieValue: a malformed percent sequence is plain, not a throw", () => {
   assert.equal(describeCookieValue("%E0%A4%A").kind, "plain");
 });
