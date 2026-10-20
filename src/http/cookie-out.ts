@@ -1,30 +1,14 @@
 // Cookie output formats. This task adds only the read side of the Netscape cookies.txt jar.
 
 import { InputError } from "../errors.js";
-import { auditSetCookie } from "./cookie-audit.js";
-import { cookieLifetime, describeCookieValue, utf8Bytes } from "./cookie-value.js";
+import { finishSetCookie } from "./cookie-row.js";
 import type { ParsedCookie, SetCookieAttributes } from "./cookie-types.js";
 
 const HTTP_ONLY_PREFIX = "#HttpOnly_";
 
-/**
- * Builds a ParsedCookie from one jar row. It mirrors cookie-parse's private builder rather than
- * importing it, because cookie-parse imports this module and the imports must stay acyclic.
- */
 function jarCookie(name: string, rawValue: string, attrs: SetCookieAttributes, raw: string, line: number, nowMs: number): ParsedCookie {
-  const quoted = rawValue.length >= 2 && rawValue.startsWith('"') && rawValue.endsWith('"');
-  const value = quoted ? rawValue.slice(1, -1) : rawValue;
-  const cookie: ParsedCookie = {
-    name,
-    value,
-    bytes: utf8Bytes(`${name}=${value}`),
-    attributes: attrs,
-    lifetime: cookieLifetime(attrs, nowMs),
-    valueInfo: describeCookieValue(rawValue),
-    audit: [],
-    source: { line, raw },
-  };
-  cookie.audit = auditSetCookie(cookie, { nowMs });
+  const cookie = finishSetCookie(name, rawValue, attrs, raw, nowMs);
+  cookie.source.line = line;
   return cookie;
 }
 

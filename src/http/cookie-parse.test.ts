@@ -104,7 +104,7 @@ test("parseCookieInput: the remaining first notes, singular forms and source lin
   assert.equal(two.notes[0], "Read as 2 Set-Cookie headers.");
   assert.deepEqual(two.cookies.map((c) => c.source.line), [1, 3]);
   const block = parseCookieInput(HEADER_BLOCK);
-  assert.equal(block.notes[0], "Read 0 Set-Cookie headers and 1 Cookie header out of a pasted header block.");
+  assert.equal(block.notes[0], "Read 1 Cookie header out of a pasted header block.");
   assert.deepEqual(block.cookies.map((c) => [c.name, c.source.line]), [["a", 3], ["b", 3]]);
   const log = parseCookieInput(NGINX_JSON_LINE, { nowMs: NOW });
   assert.equal(log.notes[0], "Read 1 Set-Cookie header out of a pasted header block.");

@@ -1,7 +1,7 @@
 import { InputError } from "../errors.js";
-import { auditCookieHeader, auditSetCookie } from "./cookie-audit.js";
+import { auditCookieHeader } from "./cookie-audit.js";
 import { parseNetscapeJar } from "./cookie-out.js";
-import { cookieLifetime, describeCookieValue, utf8Bytes } from "./cookie-value.js";
+import { finishSetCookie, makeCookie } from "./cookie-row.js";
 import { MAX_COOKIE_INPUT_CHARS } from "./cookie-types.js";
 import type { AuditFinding, CookieInputKind, CookieParseResult, ParsedCookie, SetCookieAttributes } from "./cookie-types.js";
 
@@ -16,10 +16,6 @@ function isTokenChar(ch: string): boolean {
 function isLetter(ch: string): boolean {
   const lower = ch.toLowerCase();
   return lower >= "a" && lower <= "z" && lower.length === 1;
-}
-
-function stripQuotes(raw: string): string {
-  return raw.length >= 2 && raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw;
 }
 
 function splitPair(pair: string): [name: string, value: string] {
@@ -41,21 +37,6 @@ function emptyAttributes(): SetCookieAttributes {
     priority: null,
     unknown: [],
     duplicates: [],
-  };
-}
-
-/** Builds a ParsedCookie from a raw value; the audit is filled by the caller. */
-function makeCookie(name: string, rawValue: string, attributes: SetCookieAttributes | null, raw: string): ParsedCookie {
-  const value = stripQuotes(rawValue);
-  return {
-    name,
-    value,
-    bytes: utf8Bytes(`${name}=${value}`),
-    attributes,
-    lifetime: null,
-    valueInfo: describeCookieValue(rawValue),
-    audit: [],
-    source: { line: 1, raw },
   };
 }
 
@@ -139,14 +120,6 @@ export function parseSetCookie(line: string, opts?: { nowMs?: number }): ParsedC
   }
   attrs.duplicates = [...repeated];
   return finishSetCookie(name, value, attrs, trimmed, nowMs);
-}
-
-/** A Set-Cookie style row: builds the cookie, then fills lifetime and audit. */
-function finishSetCookie(name: string, value: string, attrs: SetCookieAttributes, raw: string, nowMs: number): ParsedCookie {
-  const cookie = makeCookie(name, value, attrs, raw);
-  cookie.lifetime = cookieLifetime(attrs, nowMs);
-  cookie.audit = auditSetCookie(cookie, { nowMs });
-  return cookie;
 }
 
 const WEEKDAY_END = /(?:^|[^A-Za-z])(?:mon|tue|wed|thu|fri|sat|sun)$/i;
@@ -358,8 +331,10 @@ function readHeaderBlock(text: string, nowMs: number): Reading {
     }
     if (cookies.length === before) skipped++;
   }
-  const cookieClause = cookieHeaders > 0 ? ` and ${plural(cookieHeaders, "Cookie header")}` : "";
-  const opening = `Read ${plural(setCookies, "Set-Cookie header")}${cookieClause} out of a pasted header block.`;
+  const clauses: string[] = [];
+  if (setCookies > 0) clauses.push(plural(setCookies, "Set-Cookie header"));
+  if (cookieHeaders > 0) clauses.push(plural(cookieHeaders, "Cookie header"));
+  const opening = `Read ${clauses.join(" and ")} out of a pasted header block.`;
   return { cookies, notes: [opening, ...splits], skipped };
 }
 
