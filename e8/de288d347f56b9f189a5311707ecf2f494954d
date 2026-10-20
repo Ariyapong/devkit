@@ -1,0 +1,41 @@
+CHANGELOG.md
+  s_497dfabe7bcdaa::t_293f628464bc8e 3-8
+package-lock.json
+  s_497dfabe7bcdaa::t_052f98fbdd02f6 3,9,17,24,498-504,647-672
+package.json
+  s_497dfabe7bcdaa::t_d43cd7ab223818 3,17,39,46
+src/check-source.test.ts
+  s_497dfabe7bcdaa::t_a32f37eac4dc71 12-13,51
+src/http/cookie-date.test.ts
+  s_497dfabe7bcdaa::t_96c26f277426f6 1-21
+src/http/cookie-date.ts
+  s_497dfabe7bcdaa::t_ed5a25f3ca92f2 1-144
+src/http/cookie-types.ts
+  s_497dfabe7bcdaa::t_ab0a5d5834d8a2 1-84
+src/http/index.ts
+  s_497dfabe7bcdaa::t_edbf974c367e17 1-14
+src/http/output-scan.test.ts
+  s_497dfabe7bcdaa::t_ce7fed31d2118b 1-5
+src/http/scan-fixtures.ts
+  s_497dfabe7bcdaa::t_9679cd82bec58a 1-6
+src/index.test.ts
+  s_497dfabe7bcdaa::t_b5e87b423ce6a8 11,15
+src/index.ts
+  s_497dfabe7bcdaa::t_7c5f8ccb09ad91 17-18
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "e8de288d347f56b9f189a5311707ecf2f494954d",
+  "prompts": {},
+  "sessions": {
+    "s_497dfabe7bcdaa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d60e33-6a8f-4555-b442-c941ed1c43b9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
