@@ -26,4 +26,13 @@ export const fixtures: FixtureTable = {
   parseSetCookie: { returns: [["sid=1; Path=/; Secure", { nowMs: 1_800_000_000_000 }], ["", { nowMs: 1_800_000_000_000 }]], throws: "never" },
   // Index scanning over a string; there is no throw statement.
   splitSetCookieHeaders: { returns: [["a=1, b=2"], [""]], throws: "never" },
+  detectCookieInput: { returns: [["a=1; b=2"], ["Set-Cookie: a=1"], [""]], throws: "never" },
+  parseCookieInput: {
+    returns: [["Set-Cookie: a=1; Secure", { nowMs: 1_800_000_000_000 }], ["a=1; a=2"], [""]],
+    throws: [["a".repeat(1_000_001)]],
+  },
+  parseNetscapeJar: {
+    returns: [["# Netscape HTTP Cookie File\n#HttpOnly_.x.test\tTRUE\t/\tTRUE\t0\ta\t1", { nowMs: 1_800_000_000_000 }]],
+    throws: [["a\tb"]],
+  },
 };

@@ -14,5 +14,5 @@ export { parseStackTrace, lookupErrCode, scanErrTokens, allErrCodes, stripAnsi, 
 export type { StackParse, Frame, StackLanguage, ErrInfo } from "./debug/index.js";
 export { parseColor, hslToRgb, relatedColors, searchColors, CSS_COLORS, relativeLuminance, contrastRatio, wcagVerdicts, nearestAaPass } from "./color/index.js";
 export type { ColorInfo, WcagVerdicts } from "./color/index.js";
-export { MAX_COOKIE_INPUT_CHARS, COOKIE_MAX_BYTES, COOKIE_MAX_AGE_DAYS, parseCookieDate, parseCookieHeader, parseSetCookie, splitSetCookieHeaders, describeCookieValue, cookieLifetime, auditSetCookie, auditCookieHeader, AUTH_NAME_HINTS } from "./http/index.js";
+export { MAX_COOKIE_INPUT_CHARS, COOKIE_MAX_BYTES, COOKIE_MAX_AGE_DAYS, parseCookieDate, detectCookieInput, parseCookieInput, parseCookieHeader, parseSetCookie, splitSetCookieHeaders, parseNetscapeJar, describeCookieValue, cookieLifetime, auditSetCookie, auditCookieHeader, AUTH_NAME_HINTS } from "./http/index.js";
 export type { CookieInputKind, CookieSource, SetCookieAttributes, CookieLifetime, CookieValueKind, CookieValueInfo, CookieAuditCode, AuditFinding, ParsedCookie, CookieParseResult } from "./http/index.js";
