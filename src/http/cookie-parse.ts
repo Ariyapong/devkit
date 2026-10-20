@@ -107,8 +107,7 @@ export function parseSetCookie(line: string, opts?: { nowMs?: number }): ParsedC
       case "domain":
       case "path":
       case "expires":
-        if (attrValue === null) attrs.unknown.push([attrName, null]);
-        else attrs[key] = attrValue;
+        attrs[key] = attrValue ?? "";
         break;
       case "max-age":
         if (attrValue !== null && /^-?\d+$/.test(attrValue)) attrs.maxAge = Number(attrValue);

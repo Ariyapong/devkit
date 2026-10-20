@@ -37,3 +37,9 @@ test("parseSetCookie: wrapping quotes are stripped from value but recorded in va
   assert.equal(c.value, "x");
   assert.equal(c.valueInfo.quoted, true);
 });
+test("parseSetCookie: a valueless Domain, Path or Expires reads as empty, not unknown", () => {
+  const c = parseSetCookie("a=1; Domain; Path; Expires", { nowMs: NOW });
+  assert.equal(c.attributes!.domain, ""); assert.equal(c.attributes!.path, ""); assert.equal(c.attributes!.expires, "");
+  assert.deepEqual(c.attributes!.unknown, []);
+  assert.ok(!c.audit.some((f) => f.code === "unknown-attribute"));
+});
