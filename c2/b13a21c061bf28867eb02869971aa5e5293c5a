@@ -1,0 +1,29 @@
+src/http/cookie-out.ts
+  s_497dfabe7bcdaa::t_f7c389c3ec804e 1-65
+src/http/cookie-parse.test.ts
+  s_497dfabe7bcdaa::t_e82df816d1a272 3-6,10-26,66-130
+src/http/cookie-parse.ts
+  s_497dfabe7bcdaa::t_770292847dde27 1,3,5-6,77,96,141-142,144-146,173-498
+src/http/index.ts
+  s_497dfabe7bcdaa::t_2b55c23d7182f7 2-3
+src/http/scan-fixtures.ts
+  s_497dfabe7bcdaa::t_01c99c3778bad4 29-37
+src/index.ts
+  s_497dfabe7bcdaa::t_77abef42eea772 17
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "c2b13a21c061bf28867eb02869971aa5e5293c5a",
+  "prompts": {},
+  "sessions": {
+    "s_497dfabe7bcdaa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d60e33-6a8f-4555-b442-c941ed1c43b9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
