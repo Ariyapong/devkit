@@ -7,5 +7,5 @@ export { HASH_ALGORITHMS, hashText, hashBytes, hmacText, checkHash } from "./has
 export type { HashAlgorithm, HashCheck } from "./hashtools.js";
 export { htmlEncode, htmlDecode } from "./htmltools.js";
 export { escapeJsonString, unescapeJsonString, escapeRegex } from "./escape.js";
-export { generateTokens, alphabetFor, TOKEN_MIN_LENGTH, TOKEN_MAX_LENGTH, TOKEN_MAX_COUNT } from "./tokentools.js";
+export { generateTokens, alphabetFor, TOKEN_MIN_LENGTH, TOKEN_MAX_LENGTH, TOKEN_MAX_COUNT, TOKEN_TYPES } from "./tokentools.js";
 export type { TokenType, TokenOptions, TokenResult } from "./tokentools.js";

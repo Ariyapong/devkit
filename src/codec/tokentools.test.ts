@@ -1,6 +1,6 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { alphabetFor, generateTokens } from "./tokentools.js";
+import { alphabetFor, generateTokens, TOKEN_TYPES, type TokenOptions } from "./tokentools.js";
 import { InputError } from "../errors.js";
 
 // Deterministic RNG cycling 0,1,2,… mod max — samples the whole alphabet.
@@ -95,4 +95,11 @@ test("generateTokens: exact limit messages", () => {
     () => generateTokens({ type: "hex", length: 16, count: 0, unambiguous: false }),
     (e) => e instanceof InputError && e.message === "count must be 1–10.",
   );
+});
+
+test("generateTokens: an unknown type from plain JS throws InputError, before the length check", () => {
+  const bad = { type: "nope", length: 1, count: 1, unambiguous: false } as unknown as TokenOptions;
+  assert.throws(() => generateTokens(bad), (e: unknown) =>
+    e instanceof InputError && e.message === "type must be one of hex, base64, base64url, alphanumeric, password.");
+  assert.deepEqual([...TOKEN_TYPES], ["hex", "base64", "base64url", "alphanumeric", "password"]);
 });
