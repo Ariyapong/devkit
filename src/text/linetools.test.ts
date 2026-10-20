@@ -46,3 +46,10 @@ test("processLines: input over the cap throws", () => {
   assert.throws(() => processLines(big, {}), (e) => e instanceof InputError && e.message === `Too long — process at most ${MAX_LINES_CHARS} UTF-16 units (got ${big.length}).`);
   assert.doesNotThrow(() => processLines("x".repeat(MAX_LINES_CHARS), {}));
 });
+
+test("processLines: a lone \\r is a line break and one trailing terminator of any kind is dropped", () => {
+  assert.equal(processLines("a\rb", {}), "a\nb");
+  assert.equal(processLines("a\r", {}), "a");
+  assert.equal(processLines("a\r\nb\rc\nd", {}), "a\nb\nc\nd");
+  assert.equal(processLines("a\r\r", {}), "a\n");
+});
