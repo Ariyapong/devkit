@@ -145,12 +145,35 @@ test("parseUserAgent: empty and too long", () => {
   assert.throws(() => parseUserAgent("x".repeat(4097)), (e: unknown) => e instanceof InputError && e.message === "Too long — the user agent is over 4096 characters.");
   assert.doesNotThrow(() => parseUserAgent("x".repeat(4096)));
 });
-test("UA_FLAG_TEXT covers every flag", () => assert.equal(Object.keys(UA_FLAG_TEXT).length, 14));
+test("UA_FLAG_TEXT covers every flag", () => {
+  assert.deepEqual(UA_FLAG_TEXT, {
+    bot: "Bot",
+    "http-tool": "HTTP client",
+    headless: "Headless",
+    "in-app-browser": "In-app browser",
+    "android-webview": "Android WebView",
+    "ios-webview": "iOS WebView",
+    "chromium-edge": "Chromium (Edge)",
+    "chromium-opera": "Chromium (Opera)",
+    "chromium-samsung": "Chromium (Samsung)",
+    "frozen-windows": "Frozen Windows version",
+    "frozen-mac": "Frozen macOS version",
+    "frozen-android": "Frozen Android version",
+    "frozen-linux": "Frozen Linux platform",
+    "reduced-minor-version": "Frozen minor version",
+  });
+});
+test("parseUserAgent: surrounding whitespace is trimmed before parsing", () => {
+  const r = parseUserAgent("  curl/8.7.1  ");
+  assert.equal(r.device.type, "tool");
+  assert.equal(r.app, "curl");
+  assert.ok(r.flags.includes("http-tool"));
+});
 
 const NGINX_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36";
 const NGINX_LINE = `203.0.113.7 - - [20/Oct/2026:10:00:00 +0000] "GET /index.html HTTP/1.1" 200 612 "-" "${NGINX_UA}"`;
 
-test("extractUserAgents: nginx combined, IIS, JSON, raw list, generic product, unbalanced quote", () => {
+test("extractUserAgents: nginx combined, JSON, raw list, generic product, unbalanced quote", () => {
   assert.deepEqual(extractUserAgents(NGINX_LINE), [{ ua: NGINX_UA, line: 1 }]);
   assert.deepEqual(extractUserAgents('{"ua":"curl/8.4.0","status":200}'), [{ ua: "curl/8.4.0", line: 1 }]);
   assert.deepEqual(extractUserAgents("User-Agent: PostmanRuntime/7.36.0,").map((x) => x.ua), ["PostmanRuntime/7.36.0"]);
@@ -171,7 +194,9 @@ test("parseUserAgentBatch: counts sorted by count then name, truncation", () => 
   const big = parseUserAgentBatch(Array.from({ length: MAX_UA_BATCH + 1 }, () => "curl/8.4.0").join("\n"));
   assert.equal(big.rows.length, MAX_UA_BATCH); assert.equal(big.truncated, true);
 });
-test("parseUserAgentBatch: too long", () => assert.throws(() => parseUserAgentBatch("x".repeat(MAX_UA_INPUT_CHARS + 1)), InputError));
+test("parseUserAgentBatch: too long", () => {
+  assert.throws(() => parseUserAgentBatch("x".repeat(MAX_UA_INPUT_CHARS + 1)), (e: unknown) => e instanceof InputError && e.message === "Too long — the input is over 1000000 characters.");
+});
 
 test("extractUserAgents: bot-led lines without a slash, and no date-led log lines", () => {
   const slack = "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)";

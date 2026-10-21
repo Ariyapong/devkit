@@ -152,9 +152,11 @@ function underlyingOf(ua: string, lower: string): UaResult["underlying"] {
  * HTTP clients, headless and in-app browsers, WebViews, Chromium forks and
  * the frozen parts of reduced user-agent strings, each frozen part with a caveat.
  */
-export function parseUserAgent(ua: string): UaResult {
-  if (ua.trim() === "") throw new InputError(ERR_EMPTY);
-  if (ua.length > MAX_UA_CHARS) throw new InputError(ERR_TOO_LONG);
+export function parseUserAgent(input: string): UaResult {
+  if (input.trim() === "") throw new InputError(ERR_EMPTY);
+  if (input.length > MAX_UA_CHARS) throw new InputError(ERR_TOO_LONG);
+  // Every rule below reads the trimmed string, so pasted surrounding whitespace changes nothing.
+  const ua = input.trim();
 
   // Rule 4.4 exception: ua-parser-js reads navigator itself when the string equals the browser's own UA.
   const raw = new UAParser(ua).getResult();
