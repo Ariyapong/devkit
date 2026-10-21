@@ -1,6 +1,6 @@
 # @devwizards/devkit
 
-Pure TypeScript developer tools. Browser-safe subpaths `/json /api /time /codec /text /color /debug`; Discord renderers under `/discord`. Node >= 22. MIT.
+Pure TypeScript developer tools. Browser-safe subpaths `/json /api /http /time /codec /text /color /debug`; Discord renderers under `/discord`. Node >= 22. MIT.
 
 ## Install
 
@@ -18,6 +18,7 @@ Requires Node >= 22 (`engines.node` in `package.json`). npm warns (`EBADENGINE`)
 | `@devwizards/devkit/errors` | `InputError`, `ErrorDetail`, `sanitizeError` alone — for a consumer that catches errors from one domain subpath without loading the root's whole graph |
 | `@devwizards/devkit/json` | JSON/YAML/DSV parsing, linting, table/CSV conversion, located parse errors, and path query |
 | `@devwizards/devkit/api` | HTTP contract diffing, JSON Schema inference, and curl ↔ fetch conversion |
+| `@devwizards/devkit/http` | Cookie and Set-Cookie parsing, audit, builder and cookies.txt; user-agent and Client Hints parsing |
 | `@devwizards/devkit/time` | Epoch/ISO/cron parsing, timezone conversion, and time-string detection |
 | `@devwizards/devkit/codec` | Base64, URL encoding, JWT decoding, UUID/random-index generation, hashing and HMAC, random tokens, HTML/JSON/regex escaping |
 | `@devwizards/devkit/text` | Semver, unit conversion, URL parsing, case conversion, counting, Unicode inspection, base conversion, diffing, line tools |
@@ -25,8 +26,10 @@ Requires Node >= 22 (`engines.node` in `package.json`). npm warns (`EBADENGINE`)
 | `@devwizards/devkit/debug` | Stack trace parsing, error-code lookup, ANSI stripping, HTTP status lookup |
 | `@devwizards/devkit/discord` | **Discord-only rendering, never for the web** — turns the compute above into fenced excerpts, `<t:…>` stamps and `-#` subtext |
 
-The root barrel re-exports every runtime export of the seven domain subpaths
-(`/json /api /time /codec /text /color /debug`) plus `InputError`/`sanitizeError`.
+In `/http`, IIS W3C logs (`+`-separated) are not extracted yet by `extractUserAgents`.
+
+The root barrel re-exports every runtime export of the eight domain subpaths
+(`/json /api /http /time /codec /text /color /debug`) plus `InputError`/`sanitizeError`.
 It never re-exports anything from `./discord` — a function whose output
 contains Discord layout syntax is reachable only through
 `@devwizards/devkit/discord`.
@@ -114,18 +117,24 @@ a bug already found and fixed once:
 
 ## Browser safety
 
-The seven domain subpaths and `./discord` are safe to bundle for a browser.
+The eight domain subpaths and `./discord` are safe to bundle for a browser.
 This is enforced, not just documented:
 
 - No subpath imports `node:*`, calls `require(`, or touches the identifiers
   `Buffer`, `process`, `__dirname`, `console` — free, through
   `globalThis.x` / `globalThis["x"]`, or by destructuring `globalThis` — and
-  no source file imports a package outside the six declared dependencies
+  no source file imports a package outside the seven declared dependencies
   (a new dependency is a design decision, not a convenience). An AST-level
   scan over every source file fails `npm test` (and so CI) on any of these
   (matched as identifiers, so a `node:` substring inside a regex literal
   doesn't trip it). The scan carries its own fixture self-test, so each
   class it claims to catch is proven caught, not assumed.
+- `ua-parser-js` is the one dependency with a UMD wrapper; the
+  `test:browserish` run below covers it, so it is proven to load with
+  `Buffer` and `process` gone.
+- `ua-parser-js` reads `navigator` only for the browser's own user-agent
+  string (the one documented exception to the identifier rule above); the
+  devkit's own code never touches `navigator`.
 - `npm run test:browserish` compiles the whole suite and re-runs it under a
   preload that **deletes `Buffer` and `process` from `globalThis`** before
   any package code loads — proving the guarantee at runtime, not only in

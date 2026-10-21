@@ -40,5 +40,5 @@ export const fixtures: FixtureTable = {
   escapeRegex: { returns: [["a.b*c"]], throws: "never" },
   // String filtering only; no throw statement.
   alphabetFor: { returns: [["hex", false], ["alphanumeric", true]], throws: "never" },
-  generateTokens: { returns: [[{ type: "hex", length: 16, count: 2, unambiguous: false }]], throws: [[{ type: "hex", length: 2, count: 1, unambiguous: false }]] },
+  generateTokens: { returns: [[{ type: "hex", length: 16, count: 2, unambiguous: false }]], throws: [[{ type: "hex", length: 2, count: 1, unambiguous: false }], [{ type: "nope", length: 8, count: 1, unambiguous: false }]] },
 };

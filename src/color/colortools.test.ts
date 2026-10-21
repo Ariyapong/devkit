@@ -139,3 +139,26 @@ test("parseColor: exact error messages", () => {
   msg("hsl(10, 200%, 50%)", "HSL saturation and lightness must be 0-100.");
   msg("bluish", 'Use "#rrggbb", "#rgb", "rgb(r, g, b)", "hsl(h, s%, l%)", or a CSS color name like "coral".');
 });
+
+test("parseColor: modern forms", () => {
+  assert.equal(parseColor("rgb(255 0 0)").hex, "#ff0000");
+  assert.equal(parseColor("rgb(100% 0% 0%)").hex, "#ff0000");
+  assert.equal(parseColor("rgb(127.5, 0, 0)").hex, "#800000");
+  assert.equal(parseColor("hsl(0deg 100% 50%)").hex, "#ff0000");
+  assert.equal(parseColor("hsl(0 100% 50% / 0.5)").alpha, 0.5);
+  assert.equal(parseColor("rgba(255, 0, 0, 0.25)").alpha, 0.25);
+  assert.equal(parseColor("rgb(255 0 0 / 50%)").alpha, 0.5);
+  assert.equal(parseColor("#f008").alpha, 136 / 255);
+  assert.equal(parseColor("#ff000080").alpha, 128 / 255);
+  assert.deepEqual(parseColor("transparent"), { ...parseColor("#000000"), alpha: 0 });
+});
+test("parseColor: alpha is absent, not undefined, when the input had none; existing outputs are byte-identical", () => {
+  assert.equal("alpha" in parseColor("coral"), false);
+  assert.deepEqual(parseColor("coral"), { hex: "#ff7f50", r: 255, g: 127, b: 80, h: 16, s: 100, l: 66, int: 16744272, name: "coral" });
+  assert.deepEqual(parseColor("rgba(255, 127, 80, 1)"), { ...parseColor("coral"), alpha: 1 });
+});
+test("parseColor: still rejected, and alpha range", () => {
+  for (const bad of ["hwb(0 0% 0%)", "lab(50% 0 0)", "oklch(0.5 0.1 0)", "color(srgb 1 0 0)", "currentcolor"]) assert.throws(() => parseColor(bad), InputError);
+  assert.throws(() => parseColor("rgba(0,0,0,2)"), (e: unknown) => e instanceof InputError && e.message === "Alpha must be 0-1 or 0%-100%.");
+  assert.throws(() => parseColor("rgb(300 0 0)"), (e: unknown) => e instanceof InputError && e.message === "RGB components must be 0-255.");
+});

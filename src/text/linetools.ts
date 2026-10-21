@@ -25,10 +25,10 @@ export function processLines(input: string, ops: LineOps): string {
   }
   const src =
     input.endsWith("\r\n") ? input.slice(0, -2)
-    : input.endsWith("\n") ? input.slice(0, -1)
+    : input.endsWith("\r") || input.endsWith("\n") ? input.slice(0, -1)
     : input;
   if (src === "") return "";
-  let lines = src.split(/\r?\n/);
+  let lines = src.split(/\r\n|\r|\n/);
   const fold = (s: string) => (ops.caseInsensitive ? s.toLowerCase() : s);
 
   if (ops.trim) lines = lines.map((l) => l.trim());
