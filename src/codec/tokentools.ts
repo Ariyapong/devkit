@@ -16,7 +16,7 @@ const ALPHABETS: Record<TokenType, string> = {
   password: ALPHANUM + "!@#$%^&*-_=+?",
 };
 
-export const TOKEN_TYPES = Object.keys(ALPHABETS) as TokenType[];
+export const TOKEN_TYPES: readonly TokenType[] = Object.freeze(Object.keys(ALPHABETS) as TokenType[]);
 
 // Look-alike characters removed in `unambiguous` mode.
 const AMBIGUOUS = new Set(["0", "O", "1", "l", "I"]);

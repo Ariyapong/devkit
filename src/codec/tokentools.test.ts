@@ -102,4 +102,5 @@ test("generateTokens: an unknown type from plain JS throws InputError, before th
   assert.throws(() => generateTokens(bad), (e: unknown) =>
     e instanceof InputError && e.message === "type must be one of hex, base64, base64url, alphanumeric, password.");
   assert.deepEqual([...TOKEN_TYPES], ["hex", "base64", "base64url", "alphanumeric", "password"]);
+  assert.ok(Object.isFrozen(TOKEN_TYPES));
 });
