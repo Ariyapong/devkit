@@ -5,6 +5,7 @@ export { describeCookieValue, cookieLifetime } from "./cookie-value.js";
 export { auditSetCookie, auditCookieHeader, AUTH_NAME_HINTS } from "./cookie-audit.js";
 export { buildSetCookie, formFromCookie, ERR_COOKIE_NAME, ERR_MAX_AGE, ERR_EXPIRES } from "./cookie-build.js";
 export { parseClientHints } from "./client-hints.js";
+export { parseUserAgent, UA_FLAG_TEXT } from "./useragent.js";
 export { MAX_COOKIE_INPUT_CHARS, COOKIE_MAX_BYTES, COOKIE_MAX_AGE_DAYS } from "./cookie-types.js";
 export type {
   CookieInputKind,
@@ -19,4 +20,5 @@ export type {
   CookieParseResult,
 } from "./cookie-types.js";
 export type { ClientHints } from "./client-hints.js";
+export type { UaDeviceType, UaFlag, UaResult } from "./useragent.js";
 export type { SetCookieForm, BuiltSetCookie } from "./cookie-build.js";

@@ -51,4 +51,9 @@ export const fixtures: FixtureTable = {
   },
   // Pure string and object reading; unreadable fields are ignored and no hints yields null, with no throw statement.
   parseClientHints: { returns: [['Sec-CH-UA-Platform: "Windows"\nSec-CH-UA-Platform-Version: "15.0.0"'], [{ platform: "macOS", platformVersion: "14.4.1" }], [""]], throws: "never" },
+  // Only blank input or a string over 4096 characters throws.
+  parseUserAgent: {
+    returns: [["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"], ["curl/8.7.1"]],
+    throws: [[""]],
+  },
 };
