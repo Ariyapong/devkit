@@ -93,15 +93,16 @@ function boolItem(text: string): boolean | null {
   return typeof v === "boolean" ? v : null;
 }
 
+const HEADER_NAME = /(sec-ch-ua[-a-z0-9]*)\s*:/i;
+
 function readHeaders(block: string): Raw {
   const raw = emptyRaw();
   for (const line of block.split(/\r\n|\r|\n/)) {
-    const colon = line.indexOf(":");
-    if (colon < 0) continue;
     // Tolerate log noise before the name, such as a timestamp or a quote.
-    const words = line.slice(0, colon).trim().split(/\s+/);
-    const name = (words[words.length - 1] ?? "").replace(/^["'[]+/, "").toLowerCase();
-    const value = line.slice(colon + 1).trim();
+    const m = HEADER_NAME.exec(line);
+    if (m === null) continue;
+    const name = (m[1] ?? "").toLowerCase();
+    const value = line.slice(m.index + m[0].length).trim();
     switch (name) {
       case "sec-ch-ua": raw.brands = brandList(value); break;
       case "sec-ch-ua-full-version-list": raw.fullVersionList = brandList(value); break;

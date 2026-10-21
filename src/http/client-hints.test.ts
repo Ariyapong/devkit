@@ -24,3 +24,8 @@ test("structured fields: quoted strings with escapes, ?1/?0, params", () => {
   assert.deepEqual(parseSfList('"A\\"B";v="1", "C"'), [{ value: 'A"B', params: { v: "1" } }, { value: "C", params: {} }]);
   assert.equal(parseSfItem("?1"), true); assert.equal(parseSfItem("?0"), false); assert.equal(parseSfItem("nope"), null);
 });
+test("parseClientHints: header lines behind log noise such as timestamps", () => {
+  assert.equal(parseClientHints('2026-10-20 12:00:00 Sec-CH-UA-Platform: "Windows"')!.platform, "Windows");
+  assert.equal(parseClientHints("[20/Oct/2026:12:00:00 +0000] Sec-CH-UA-Mobile: ?1")!.mobile, true);
+  assert.equal(parseClientHints('12:00:00 Sec-CH-UA-Full-Version-List: "Not(A:Brand";v="8", "Chromium";v="124"')!.fullVersionList.length, 1);
+});
