@@ -4,7 +4,28 @@
 
 ### Added
 
+- `/http` subpath: cookie and `Set-Cookie` parsing (`detectCookieInput`,
+  `parseCookieInput`, `parseCookieHeader`, `parseSetCookie`,
+  `splitSetCookieHeaders`, `parseCookieDate`), output (`toCookieHeader`,
+  `toNetscapeJar`, `parseNetscapeJar`, `cookiesToJson`), value and lifetime
+  description (`describeCookieValue`, `cookieLifetime`), auditing
+  (`auditSetCookie`, `auditCookieHeader`, `AUTH_NAME_HINTS`), a builder
+  (`buildSetCookie`, `formFromCookie`), and user-agent and Client Hints
+  parsing (`parseUserAgent`, `parseUserAgentBatch`, `extractUserAgents`,
+  `parseClientHints`) with their limits, error strings and types.
+  `parseNetscapeJar` throws `Line N has a non-numeric expiry.` for a
+  non-digit expiry field; a huge numeric expiry is clamped to
+  9999-12-31T23:59:59Z.
+- `TOKEN_TYPES` is exported from `/codec` and the root.
+- `ColorInfo.alpha`: `parseColor` now reports the alpha channel.
+
 ### Changed
+
+- `parseColor` accepts modern CSS forms (space-separated `rgb()`/`hsl()`
+  with `/ alpha`, percentage alpha, 4- and 8-digit hex) and returns `alpha`.
+- `generateTokens` throws `InputError` for an unknown token type.
+- `processLines` treats a lone `\r` as a line break.
+- Seventh runtime dependency: `ua-parser-js` 1.0.41 (exact), used by `/http`.
 
 ## 0.3.0 — 2026-10-08
 
