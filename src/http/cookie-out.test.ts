@@ -24,3 +24,10 @@ test("cookiesToJson has no source field and is pretty", () => {
   const j = JSON.parse(cookiesToJson(parseCookieInput("a=1")));
   assert.equal("source" in j.cookies[0], false); assert.ok(cookiesToJson(parseCookieInput("a=1")).includes("\n  "));
 });
+test("parseNetscapeJar: a huge numeric expiry is clamped to a far-future expires", () => {
+  for (const huge of ["99999999999999999999", "8640000000000", "253402300800"]) {
+    const [c] = parseNetscapeJar(`.x\tTRUE\t/\tFALSE\t${huge}\ta\t1`, { nowMs: NOW });
+    assert.equal(c!.lifetime!.kind, "expires");
+    assert.doesNotThrow(() => parseNetscapeJar(toNetscapeJar([c!], { nowMs: NOW }), { nowMs: NOW }));
+  }
+});

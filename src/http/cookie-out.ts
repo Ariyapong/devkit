@@ -6,7 +6,7 @@ import type { CookieParseResult, ParsedCookie, SetCookieAttributes } from "./coo
 
 const HTTP_ONLY_PREFIX = "#HttpOnly_";
 const JAR_HEADER = "# Netscape HTTP Cookie File";
-const MAX_DATE_MS = 8.64e15; // the largest instant a Date can hold
+const MAX_JAR_MS = 253_402_300_799_000; // 9999-12-31T23:59:59Z, the last year parseCookieDate reads
 
 function jarCookie(name: string, rawValue: string, attrs: SetCookieAttributes, raw: string, line: number, nowMs: number): ParsedCookie {
   const cookie = finishSetCookie(name, rawValue, attrs, raw, nowMs);
@@ -18,7 +18,7 @@ function jarCookie(name: string, rawValue: string, attrs: SetCookieAttributes, r
 function jarExpires(field: string, line: number): string | null {
   if (!/^\d+$/.test(field)) throw new InputError(`Line ${line} has a non-numeric expiry.`);
   if (field === "0") return null;
-  return new Date(Math.min(Number(field) * 1000, MAX_DATE_MS)).toUTCString();
+  return new Date(Math.min(Number(field) * 1000, MAX_JAR_MS)).toUTCString();
 }
 
 export function parseNetscapeJar(text: string, opts?: { nowMs?: number }): ParsedCookie[] {
