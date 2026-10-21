@@ -1,0 +1,21 @@
+src/codec/tokentools.test.ts
+  s_497dfabe7bcdaa::t_427f0266b174ff 105
+src/codec/tokentools.ts
+  s_497dfabe7bcdaa::t_71bae8eead5888 19
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "7dfcbdff6ea7e93bd4407a1e48fa2a29cb75c52c",
+  "prompts": {},
+  "sessions": {
+    "s_497dfabe7bcdaa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d60e33-6a8f-4555-b442-c941ed1c43b9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
