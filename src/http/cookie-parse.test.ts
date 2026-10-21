@@ -84,7 +84,7 @@ test("parseCookieInput: notes, counts, set-level audit, line numbers", () => {
 test("parseCookieInput: duplicate names and total size are set-level findings", () => {
   const r = parseCookieInput("a=1; a=2; a=3");
   assert.deepEqual(r.audit, [{ code: "duplicate-name", level: "warn", message: "\"a\" appears 3 times. The last one wins in a Cookie header; browsers keep the one whose Domain and Path match best." }]);
-  assert.ok(parseCookieInput("a=" + "x".repeat(9000)).audit.some((f) => f.code === "total-size"));
+  assert.deepEqual(parseCookieInput("a=" + "x".repeat(9000)).audit, [{ code: "total-size", level: "warn", message: "All cookies together are 9002 bytes. Browsers send every matching cookie on every request." }]);
 });
 test("parseCookieInput: devtools table maps columns, Session, ✓, and recomputes size", () => {
   const r = parseCookieInput(DEVTOOLS_ROWS_HEADER);
@@ -127,4 +127,31 @@ test("parseNetscapeJar: Unix-seconds expiry and the field-count error", () => {
   assert.deepEqual(c!.lifetime, { kind: "expires", atMs: 1_900_000_000_000, remainingMs: 100_000_000_000, source: "expires" });
   assert.equal(c!.attributes!.path, "/p");
   assert.throws(() => parseNetscapeJar("# c\na\tb"), (e: unknown) => e instanceof InputError && e.message === "Line 2 has 2 fields, not 7.");
+});
+
+test("parseCookieInput: a 12-field header-less devtools row reads Priority from the last column", () => {
+  const row = ["sid", "abc", "example.com", "/", "Session", "6", "✓", "✓", "Lax", "", "✓", "High"].join("\t");
+  const r = parseCookieInput(row);
+  assert.equal(r.kind, "devtools-table");
+  const c = r.cookies[0]!;
+  assert.equal(c.attributes!.priority, "High");
+  assert.ok(!c.audit.some((f) => f.code === "priority-invalid" || f.code === "unknown-attribute"), JSON.stringify(c.audit));
+  const eleven = parseCookieInput(["sid", "abc", "example.com", "/", "Session", "6", "✓", "✓", "Lax", "", "Low"].join("\t"));
+  assert.equal(eleven.cookies[0]!.attributes!.priority, "Low");
+});
+test("parseCookieInput: JSON logs with quoted cookie keys", () => {
+  const req = '{"level":30,"req":{"headers":{"host":"x","cookie":"sid=abc; theme=dark"}},"status":200}';
+  assert.equal(detectCookieInput(req), "header-block");
+  assert.deepEqual(parseCookieInput(req).cookies.map((c) => `${c.name}=${c.value}`), ["sid=abc", "theme=dark"]);
+  assert.deepEqual(parseCookieInput('{"set_cookie":"Set-Cookie: a=1; Secure"}').cookies.map((c) => [c.name, c.attributes?.secure]), [["a", true]]);
+  const res = parseCookieInput('{"headers":{"set-cookie":"a=1; Path=/; Secure"}}');
+  assert.equal(res.cookies.length, 1);
+  assert.equal(res.cookies[0]!.name, "a");
+  assert.equal(res.cookies[0]!.attributes!.path, "/");
+  assert.equal(res.cookies[0]!.attributes!.secure, true);
+});
+test("parseCookieInput: a header block whose headers are all empty reads no cookies", () => {
+  const r = parseCookieInput("GET / HTTP/1.1\nSet-Cookie:\nHost: x");
+  assert.equal(r.notes[0], "Read no cookies out of a pasted header block.");
+  assert.deepEqual(r.cookies, []);
 });

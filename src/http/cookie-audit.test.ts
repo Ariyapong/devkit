@@ -226,3 +226,15 @@ test("oversize at exactly 4097 bytes, not 4096", () => {
   assert.equal(auditCookieHeader(cookie("a", "x".repeat(4094))).length, 0);
   assert.equal(auditCookieHeader(cookie("a", "x".repeat(4095)))[0]?.code, "oversize");
 });
+
+test("auditSetCookie: the __Host- and __Secure- prefixes match case-insensitively", () => {
+  const host = auditSetCookie(cookie("__HOST-sid", "1", { path: "/" }), { nowMs: NOW });
+  assert.deepEqual(host.find((f) => f.code === "host-prefix-insecure"), { code: "host-prefix-insecure", level: "error", message: "__Host- cookies must be Secure. Browsers reject this one." });
+  assert.ok(auditSetCookie(cookie("__secure-x", "1"), { nowMs: NOW }).some((f) => f.code === "secure-prefix-insecure"));
+});
+test("auditSetCookie: Domain=localhost is not a public suffix; Domain=com still is", () => {
+  const codes = (domain: string) => auditSetCookie(cookie("a", "1", { domain, secure: true, sameSite: "Lax" }), { nowMs: NOW }).map((f) => f.code);
+  assert.ok(!codes("localhost").includes("domain-public-suffix"));
+  assert.ok(!codes("LocalHost").includes("domain-public-suffix"));
+  assert.ok(codes("com").includes("domain-public-suffix"));
+});

@@ -64,7 +64,8 @@ function isIpLiteral(domain: string): boolean {
 
 function isPublicSuffix(domain: string): boolean {
   const host = domain.toLowerCase();
-  return host !== "" && (!host.includes(".") || PUBLIC_SUFFIXES.includes(host));
+  // A single label is a public suffix, except localhost, which browsers treat as a host.
+  return host !== "" && ((!host.includes(".") && host !== "localhost") || PUBLIC_SUFFIXES.includes(host));
 }
 
 function sortByLevel(findings: Finding[]): Finding[] {
@@ -106,13 +107,15 @@ export function auditSetCookie(cookie: ParsedCookie, opts?: { nowMs?: number }):
   const errors: Finding[] = [];
   const warns: Finding[] = [];
   const infos: Finding[] = [];
+  // Browsers match the __Host- and __Secure- prefixes case-insensitively (RFC 6265bis).
+  const lowerName = cookie.name.toLowerCase();
 
-  if (cookie.name.startsWith("__Host-")) {
+  if (lowerName.startsWith("__host-")) {
     if (!attrs.secure) errors.push(finding("host-prefix-insecure", "error", "__Host- cookies must be Secure. Browsers reject this one."));
     if (attrs.domain !== null) errors.push(finding("host-prefix-domain", "error", "__Host- cookies must not set a Domain. Browsers reject this one."));
     if (attrs.path !== "/") errors.push(finding("host-prefix-path", "error", "__Host- cookies must set Path=/. Browsers reject this one."));
   }
-  if (cookie.name.startsWith("__Secure-") && !attrs.secure) {
+  if (lowerName.startsWith("__secure-") && !attrs.secure) {
     errors.push(finding("secure-prefix-insecure", "error", "__Secure- cookies must be Secure. Browsers reject this one."));
   }
   if (attrs.sameSite === "None" && !attrs.secure) {

@@ -2,8 +2,10 @@
 
 import { InputError } from "../errors.js";
 import { parseCookieDate } from "./cookie-date.js";
+import { auditCookieHeader } from "./cookie-audit.js";
 import { parseSetCookie } from "./cookie-parse.js";
-import type { ParsedCookie } from "./cookie-types.js";
+import { makeCookie } from "./cookie-row.js";
+import type { AuditFinding, ParsedCookie } from "./cookie-types.js";
 
 export interface SetCookieForm {
   name: string;
@@ -30,6 +32,20 @@ export interface BuiltSetCookie {
 export const ERR_COOKIE_NAME = "The cookie needs a name.";
 export const ERR_MAX_AGE = "Max-Age must be a whole number of seconds.";
 export const ERR_EXPIRES = "Expires isn't a date browsers can read.";
+
+const LEVEL_RANK = { error: 0, warn: 1, info: 2 } as const;
+
+/**
+ * The re-parsed header's audit plus the name and value findings on the form's raw
+ * fields, so a `;` typed into the value is reported rather than silently cut.
+ */
+function mergeRawAudit(cookie: ParsedCookie, form: SetCookieForm): AuditFinding[] {
+  const raw = makeCookie(form.name, form.value, null, `${form.name}=${form.value}`);
+  const codes = new Set(cookie.audit.map((f) => f.code));
+  const merged = [...cookie.audit, ...auditCookieHeader(raw).filter((f) => !codes.has(f.code))];
+  // Array.prototype.sort is stable, so the re-parse's order survives within a level.
+  return merged.sort((x, y) => LEVEL_RANK[x.level] - LEVEL_RANK[y.level]);
+}
 
 const NO_COOKIE_OPTIONS_NOTE = "// Partitioned and Priority have no CookieOptions property; append them to the header yourself.";
 
@@ -84,10 +100,12 @@ export function buildSetCookie(form: SetCookieForm, opts?: { nowMs?: number }): 
   if (form.partitioned) parts.push("Partitioned");
   if (form.priority !== "") parts.push(`Priority=${form.priority}`);
   const header = parts.join("; ");
+  const cookie = parseSetCookie(header, { nowMs });
+  cookie.audit = mergeRawAudit(cookie, form);
 
   return {
     header,
-    cookie: parseSetCookie(header, { nowMs }),
+    cookie,
     express: expressSnippet(form, expiresMs),
     dotnet: dotnetSnippet(form, expiresMs),
   };

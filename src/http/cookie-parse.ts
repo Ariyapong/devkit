@@ -147,7 +147,8 @@ export function splitSetCookieHeaders(joined: string): string[] {
 // ---- Input detection -------------------------------------------------------
 
 const MAX_TOTAL_BYTES = 8192;
-const HEADER_NAME = /(^|[\s"',{])(set-cookie|cookie)\s*:/i;
+// An optional quote may close the name, as in a JSON log's "cookie": key.
+const HEADER_NAME = /(^|[\s"',{])(set-cookie|cookie)(["']?)\s*:/i;
 const SET_COOKIE_NAME = /^\s*set-cookie\s*:/i;
 const TRAILING_LOG_NOISE = "\"',}]";
 
@@ -230,7 +231,15 @@ function findHeader(line: string): HeaderHit | null {
   const name = (m[2] ?? "").toLowerCase() === "cookie" ? "cookie" : "set-cookie";
   const noisy = line.slice(0, m.index + lead.length).trim() !== "";
   let value = line.slice(m.index + m[0].length);
-  if (lead === '"' || lead === "'") {
+  const opener = value.trimStart().slice(0, 1);
+  if ((m[3] ?? "") !== "" && (opener === '"' || opener === "'")) {
+    // A quoted key with a quoted value: the value ends at its own closing quote.
+    value = value.trimStart().slice(1);
+    const close = value.indexOf(opener);
+    if (close !== -1) value = value.slice(0, close);
+    value = value.trimEnd();
+    while (value !== "" && TRAILING_LOG_NOISE.includes(value.slice(-1))) value = value.slice(0, -1);
+  } else if (lead === '"' || lead === "'") {
     const close = value.indexOf(lead);
     if (close !== -1) value = value.slice(0, close);
     value = value.trimEnd();
@@ -334,7 +343,7 @@ function readHeaderBlock(text: string, nowMs: number): Reading {
   const clauses: string[] = [];
   if (setCookies > 0) clauses.push(plural(setCookies, "Set-Cookie header"));
   if (cookieHeaders > 0) clauses.push(plural(cookieHeaders, "Cookie header"));
-  const opening = `Read ${clauses.join(" and ")} out of a pasted header block.`;
+  const opening = `Read ${clauses.length === 0 ? "no cookies" : clauses.join(" and ")} out of a pasted header block.`;
   return { cookies, notes: [opening, ...splits], skipped };
 }
 
@@ -344,6 +353,14 @@ type DevtoolsColumn = "name" | "value" | "domain" | "path" | "expires" | "httpOn
 const DEVTOOLS_POSITIONS: Record<DevtoolsColumn, number> = {
   name: 0, value: 1, domain: 2, path: 3, expires: 4, httpOnly: 6, secure: 7, sameSite: 8, partitionKey: 9, priority: 10,
 };
+
+/** Current Chromium adds Cross Site at index 10, which is ignored, and moves Priority to 11. */
+const DEVTOOLS_POSITIONS_12: Record<DevtoolsColumn, number> = { ...DEVTOOLS_POSITIONS, priority: 11 };
+
+/** Header-less rows map by field count: 12 or more fields is the Cross Site layout. */
+function positionsFor(line: Line): Record<DevtoolsColumn, number> {
+  return line.text.split("\t").length >= 12 ? DEVTOOLS_POSITIONS_12 : DEVTOOLS_POSITIONS;
+}
 
 const DEVTOOLS_HEADERS: Record<string, DevtoolsColumn> = {
   name: "name",
@@ -401,8 +418,8 @@ function readDevtoolsTable(text: string, nowMs: number): Reading {
   const lines = inputLines(text);
   const rows = devtoolsRows(lines);
   const header = rows === lines ? undefined : lines[0];
-  const columns = header === undefined ? DEVTOOLS_POSITIONS : devtoolsColumns(header.text);
-  const cookies = rows.map((row) => devtoolsCookie(row, columns, nowMs));
+  const columns = header === undefined ? null : devtoolsColumns(header.text);
+  const cookies = rows.map((row) => devtoolsCookie(row, columns ?? positionsFor(row), nowMs));
   return { cookies, notes: [`Read as a devtools cookie table (${plural(cookies.length, "row")}).`], skipped: 0 };
 }
 

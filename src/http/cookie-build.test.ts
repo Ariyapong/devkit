@@ -35,3 +35,11 @@ test("formFromCookie round trip", () => {
   assert.deepEqual(formFromCookie(b.cookie), FULL);
   assert.deepEqual(formFromCookie(parseCookieHeader("a=1")[0]!), { name: "a", value: "1", domain: "", path: "", lifetime: "session", maxAge: "", expires: "", secure: false, httpOnly: false, partitioned: false, sameSite: "", priority: "" });
 });
+test("buildSetCookie: the raw form value is audited, so a ; in it is reported", () => {
+  const b = buildSetCookie({ ...FULL, value: "a;b" }, { nowMs: NOW });
+  const invalid = b.cookie.audit.filter((f) => f.code === "value-invalid");
+  assert.equal(invalid.length, 1);
+  assert.ok(invalid[0]!.message.includes('";"'), invalid[0]!.message);
+  const ranks = b.cookie.audit.map((f) => ({ error: 0, warn: 1, info: 2 })[f.level]);
+  assert.deepEqual(ranks, [...ranks].sort((x, y) => x - y));
+});
