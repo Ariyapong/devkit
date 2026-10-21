@@ -49,4 +49,6 @@ export const fixtures: FixtureTable = {
     returns: [[{ name: "sid", value: "1", bytes: 5, attributes: null, lifetime: null, valueInfo: { kind: "plain", decoded: null, layers: [], quoted: false }, audit: [], source: { line: 1, raw: "sid=1" } }]],
     throws: "never",
   },
+  // Pure string and object reading; unreadable fields are ignored and no hints yields null, with no throw statement.
+  parseClientHints: { returns: [['Sec-CH-UA-Platform: "Windows"\nSec-CH-UA-Platform-Version: "15.0.0"'], [{ platform: "macOS", platformVersion: "14.4.1" }], [""]], throws: "never" },
 };
