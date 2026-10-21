@@ -1,7 +1,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { InputError } from "../errors.js";
-import { parseUserAgent, UA_FLAG_TEXT } from "./useragent.js";
+import { extractUserAgents, MAX_UA_BATCH, MAX_UA_INPUT_CHARS, parseUserAgent, parseUserAgentBatch, UA_FLAG_TEXT } from "./useragent.js";
 import type { UaDeviceType, UaFlag } from "./useragent.js";
 
 interface Row {
@@ -146,3 +146,29 @@ test("parseUserAgent: empty and too long", () => {
   assert.doesNotThrow(() => parseUserAgent("x".repeat(4096)));
 });
 test("UA_FLAG_TEXT covers every flag", () => assert.equal(Object.keys(UA_FLAG_TEXT).length, 14));
+
+const NGINX_UA = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36";
+const NGINX_LINE = `203.0.113.7 - - [20/Oct/2026:10:00:00 +0000] "GET /index.html HTTP/1.1" 200 612 "-" "${NGINX_UA}"`;
+
+test("extractUserAgents: nginx combined, IIS, JSON, raw list, generic product, unbalanced quote", () => {
+  assert.deepEqual(extractUserAgents(NGINX_LINE), [{ ua: NGINX_UA, line: 1 }]);
+  assert.deepEqual(extractUserAgents('{"ua":"curl/8.4.0","status":200}'), [{ ua: "curl/8.4.0", line: 1 }]);
+  assert.deepEqual(extractUserAgents("User-Agent: PostmanRuntime/7.36.0,").map((x) => x.ua), ["PostmanRuntime/7.36.0"]);
+  assert.deepEqual(extractUserAgents("Dalvik/2.1.0 (Linux; U; Android 13; Pixel 7 Build/TQ3A)\nMyApp/3.2 CFNetwork/1485 Darwin/23.1.0\nRoku/DVP-12.0 (12.0.0.4182-46)").map((x) => x.line), [1, 2, 3]);
+  assert.deepEqual(extractUserAgents("2026-10-20 ok\n\nnothing here"), []);
+  assert.equal(extractUserAgents('1.2.3.4 - - [20/Oct/2026] "GET / HTTP/1.1" 200 1 "-" "Mozilla/5.0 (X11').at(0)?.ua, "Mozilla/5.0 (X11");
+});
+test("extractUserAgents: trims candidates and caps each at 4096 characters", () => {
+  assert.deepEqual(extractUserAgents("   curl/8.4.0  "), [{ ua: "curl/8.4.0", line: 1 }]);
+  assert.equal(extractUserAgents(`curl/8.4.0 ${"x".repeat(5000)}`)[0]?.ua.length, 4096);
+});
+test("parseUserAgentBatch: counts sorted by count then name, truncation", () => {
+  const b = parseUserAgentBatch([NGINX_LINE, "curl/8.4.0", "curl/8.4.0"].join("\n"));
+  assert.equal(b.rows.length, 3);
+  assert.deepEqual(b.counts.devices, [["tool", 2], ["desktop", 1]]);
+  assert.deepEqual(b.counts.os.map(([n]) => n), ["Unknown", parseUserAgent(NGINX_UA).os.name]); // count 2 before count 1
+  assert.equal(b.truncated, false);
+  const big = parseUserAgentBatch(Array.from({ length: MAX_UA_BATCH + 1 }, () => "curl/8.4.0").join("\n"));
+  assert.equal(big.rows.length, MAX_UA_BATCH); assert.equal(big.truncated, true);
+});
+test("parseUserAgentBatch: too long", () => assert.throws(() => parseUserAgentBatch("x".repeat(MAX_UA_INPUT_CHARS + 1)), InputError));

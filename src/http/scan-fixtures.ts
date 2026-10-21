@@ -56,4 +56,8 @@ export const fixtures: FixtureTable = {
     returns: [["Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/129.0.0.0 Safari/537.36"], ["curl/8.7.1"]],
     throws: [[""]],
   },
+  // Line scanning that skips anything unrecognised and caps each candidate; there is no throw statement.
+  extractUserAgents: { returns: [["curl/8.7.1\nnothing here"], [""]], throws: "never" },
+  // Only input over MAX_UA_INPUT_CHARS throws; per-row parse errors cannot happen.
+  parseUserAgentBatch: { returns: [["curl/8.7.1"], [""]], throws: [["x".repeat(1_000_001)]] },
 };

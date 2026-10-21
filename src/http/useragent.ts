@@ -222,3 +222,102 @@ export function parseUserAgent(ua: string): UaResult {
     app,
   };
 }
+
+export const MAX_UA_INPUT_CHARS = 1_000_000;
+export const MAX_UA_BATCH = 5000;
+
+const ERR_INPUT_TOO_LONG = `Too long — the input is over ${MAX_UA_INPUT_CHARS} characters.`;
+const UA_HEADER = "user-agent:";
+// A generic product token: name/version, the name in letters, digits, "." "_" "-" and the version starting with a
+// digit (or a short label then a digit, as in Roku/DVP-12.0, which the spec's own example needs).
+const GENERIC_PRODUCT = /^[A-Za-z0-9._-]+\/(?:\d|[A-Za-z]+-\d)/;
+
+// The rest of a "User-Agent:" header line, without wrapping quotes or a trailing comma.
+function headerValue(rest: string): string {
+  let value = rest.trim();
+  if (value.endsWith(",")) value = value.slice(0, -1).trim();
+  if (value.length >= 1 && (value.startsWith('"') || value.startsWith("'"))) value = value.slice(1);
+  if (value.endsWith('"') || value.endsWith("'")) value = value.slice(0, -1);
+  return value.trim();
+}
+
+function looksLikeUserAgent(text: string): boolean {
+  return text.startsWith("Mozilla/") || matchHttpTool(text) !== null || GENERIC_PRODUCT.test(text);
+}
+
+// A quoted segment counts when it starts like a user agent, or is a product line naming a bot.
+function isUserAgentSegment(segment: string): boolean {
+  if (segment.startsWith("Mozilla/") || matchHttpTool(segment) !== null) return true;
+  return GENERIC_PRODUCT.test(segment) && matchBot(segment.toLowerCase()) !== null;
+}
+
+// Quoted segments pair up left to right; an unbalanced final quote takes the rest of the line.
+function quotedUserAgent(line: string): string | null {
+  let i = line.indexOf('"');
+  while (i !== -1) {
+    const close = line.indexOf('"', i + 1);
+    const segment = (close === -1 ? line.slice(i + 1) : line.slice(i + 1, close)).trim();
+    if (isUserAgentSegment(segment)) return segment;
+    if (close === -1) return null;
+    i = line.indexOf('"', close + 1);
+  }
+  return null;
+}
+
+/**
+ * Pulls user-agent strings out of pasted text: `User-Agent:` header lines,
+ * the quoted segment of nginx/Apache access logs or JSON, and bare lines that
+ * start like a product token. Each candidate is trimmed and capped at 4096
+ * characters. Line numbers are 1-based. Never throws.
+ */
+export function extractUserAgents(text: string): { ua: string; line: number }[] {
+  const found: { ua: string; line: number }[] = [];
+  text.split(/\r\n|\n|\r/).forEach((line, index) => {
+    const headerAt = line.toLowerCase().indexOf(UA_HEADER);
+    let ua: string | null = null;
+    if (headerAt !== -1) ua = headerValue(line.slice(headerAt + UA_HEADER.length));
+    else {
+      ua = quotedUserAgent(line);
+      if (ua === null) {
+        const whole = line.trim();
+        if (looksLikeUserAgent(whole)) ua = whole;
+      }
+    }
+    if (ua === null) return;
+    const capped = ua.slice(0, MAX_UA_CHARS).trim();
+    if (capped !== "") found.push({ ua: capped, line: index + 1 });
+  });
+  return found;
+}
+
+export interface UaBatch {
+  rows: ({ line: number } & UaResult)[];
+  counts: { browsers: [string, number][]; os: [string, number][]; devices: [string, number][] };
+  truncated: boolean;
+}
+
+// Count descending, then name ascending.
+function tally(names: string[]): [string, number][] {
+  const counts = new Map<string, number>();
+  for (const name of names) counts.set(name, (counts.get(name) ?? 0) + 1);
+  return [...counts].sort((a, b) => b[1] - a[1] || (a[0] < b[0] ? -1 : a[0] > b[0] ? 1 : 0));
+}
+
+/**
+ * Parses every user agent found in pasted text (see `extractUserAgents`), up to
+ * `MAX_UA_BATCH` rows, and counts browsers, operating systems and device types.
+ */
+export function parseUserAgentBatch(text: string): UaBatch {
+  if (text.length > MAX_UA_INPUT_CHARS) throw new InputError(ERR_INPUT_TOO_LONG);
+  const candidates = extractUserAgents(text);
+  const rows = candidates.slice(0, MAX_UA_BATCH).map(({ ua, line }) => ({ line, ...parseUserAgent(ua) }));
+  return {
+    rows,
+    counts: {
+      browsers: tally(rows.map((r) => r.browser.name ?? "Unknown")),
+      os: tally(rows.map((r) => r.os.name ?? "Unknown")),
+      devices: tally(rows.map((r) => r.device.type)),
+    },
+    truncated: candidates.length > MAX_UA_BATCH,
+  };
+}
