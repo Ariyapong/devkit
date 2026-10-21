@@ -228,9 +228,9 @@ export const MAX_UA_BATCH = 5000;
 
 const ERR_INPUT_TOO_LONG = `Too long — the input is over ${MAX_UA_INPUT_CHARS} characters.`;
 const UA_HEADER = "user-agent:";
-// A generic product token: name/version, the name in letters, digits, "." "_" "-" and the version starting with a
+// A generic product token: name/version, the name starting with a letter, then letters, digits, "." "_" "-" and the version starting with a
 // digit (or a short label then a digit, as in Roku/DVP-12.0, which the spec's own example needs).
-const GENERIC_PRODUCT = /^[A-Za-z0-9._-]+\/(?:\d|[A-Za-z]+-\d)/;
+const GENERIC_PRODUCT = /^[A-Za-z][A-Za-z0-9._-]*\/(?:\d|[A-Za-z]+-\d)/;
 
 // The rest of a "User-Agent:" header line, without wrapping quotes or a trailing comma.
 function headerValue(rest: string): string {
@@ -241,13 +241,18 @@ function headerValue(rest: string): string {
   return value.trim();
 }
 
+function startsWithBot(text: string): boolean {
+  const lower = text.toLowerCase();
+  return [...NAMED_BOTS, ...GENERIC_BOT_TOKENS].some((t) => lower.startsWith(t.toLowerCase()));
+}
+
 function looksLikeUserAgent(text: string): boolean {
-  return text.startsWith("Mozilla/") || matchHttpTool(text) !== null || GENERIC_PRODUCT.test(text);
+  return text.startsWith("Mozilla/") || matchHttpTool(text) !== null || GENERIC_PRODUCT.test(text) || startsWithBot(text);
 }
 
 // A quoted segment counts when it starts like a user agent, or is a product line naming a bot.
 function isUserAgentSegment(segment: string): boolean {
-  if (segment.startsWith("Mozilla/") || matchHttpTool(segment) !== null) return true;
+  if (segment.startsWith("Mozilla/") || matchHttpTool(segment) !== null || startsWithBot(segment)) return true;
   return GENERIC_PRODUCT.test(segment) && matchBot(segment.toLowerCase()) !== null;
 }
 

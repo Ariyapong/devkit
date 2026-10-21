@@ -172,3 +172,11 @@ test("parseUserAgentBatch: counts sorted by count then name, truncation", () => 
   assert.equal(big.rows.length, MAX_UA_BATCH); assert.equal(big.truncated, true);
 });
 test("parseUserAgentBatch: too long", () => assert.throws(() => parseUserAgentBatch("x".repeat(MAX_UA_INPUT_CHARS + 1)), InputError));
+
+test("extractUserAgents: bot-led lines without a slash, and no date-led log lines", () => {
+  const slack = "Slackbot-LinkExpanding 1.0 (+https://api.slack.com/robots)";
+  assert.deepEqual(extractUserAgents(slack), [{ ua: slack, line: 1 }]);
+  assert.deepEqual(extractUserAgents(`1.2.3.4 - - [20/Oct/2026] "GET / HTTP/1.1" 200 1 "-" "${slack}"`).map((x) => x.ua), [slack]);
+  assert.deepEqual(extractUserAgents('1.2.3.4 - - [20/Oct/2026] "GET /spider HTTP/1.1" 200 1'), []);
+  assert.deepEqual(extractUserAgents('2026/10/20 10:00:00 [error] 1#1: *1 open() failed, request: "GET /x HTTP/1.1"\n10/20/2026 something happened'), []);
+});
