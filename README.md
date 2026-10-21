@@ -26,6 +26,8 @@ Requires Node >= 22 (`engines.node` in `package.json`). npm warns (`EBADENGINE`)
 | `@devwizards/devkit/debug` | Stack trace parsing, error-code lookup, ANSI stripping, HTTP status lookup |
 | `@devwizards/devkit/discord` | **Discord-only rendering, never for the web** — turns the compute above into fenced excerpts, `<t:…>` stamps and `-#` subtext |
 
+In `/http`, IIS W3C logs (`+`-separated) are not extracted yet by `extractUserAgents`.
+
 The root barrel re-exports every runtime export of the eight domain subpaths
 (`/json /api /http /time /codec /text /color /debug`) plus `InputError`/`sanitizeError`.
 It never re-exports anything from `./discord` — a function whose output
@@ -132,7 +134,7 @@ This is enforced, not just documented:
   `Buffer` and `process` gone.
 - `ua-parser-js` reads `navigator` only for the browser's own user-agent
   string (the one documented exception to the identifier rule above); the
-  library's own code never touches `navigator`.
+  devkit's own code never touches `navigator`.
 - `npm run test:browserish` compiles the whole suite and re-runs it under a
   preload that **deletes `Buffer` and `process` from `globalThis`** before
   any package code loads — proving the guarantee at runtime, not only in

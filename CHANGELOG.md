@@ -15,8 +15,10 @@
   `parseClientHints`) with their limits, error strings and types.
   `parseNetscapeJar` throws `Line N has a non-numeric expiry.` for a
   non-digit expiry field; a huge numeric expiry is clamped to
-  9999-12-31T23:59:59Z.
-- `TOKEN_TYPES` is exported from `/codec` and the root.
+  9999-12-31T23:59:59Z. The audit matches the `__Host-` and `__Secure-`
+  prefixes case-insensitively, as browsers do; `parseUserAgent` trims its
+  input before parsing.
+- `TOKEN_TYPES` is exported from `/codec` and the root as a frozen `readonly` array.
 - `ColorInfo.alpha`: `parseColor` now reports the alpha channel.
 
 ### Changed

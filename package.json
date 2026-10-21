@@ -1,7 +1,7 @@
 {
   "name": "@devwizards/devkit",
   "version": "0.4.0",
-  "description": "Wizard level tools for developers: pure TypeScript helpers for JSON, APIs, time, codecs, text, colour and debugging.",
+  "description": "Wizard level tools for developers: pure TypeScript helpers for JSON, APIs, HTTP cookies and user agents, time, codecs, text, colour and debugging.",
   "license": "MIT",
   "type": "module",
   "engines": { "node": ">=22" },
