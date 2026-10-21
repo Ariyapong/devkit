@@ -39,4 +39,14 @@ export const fixtures: FixtureTable = {
     returns: [["# Netscape HTTP Cookie File\n#HttpOnly_.x.test\tTRUE\t/\tTRUE\t0\ta\t1", { nowMs: 1_800_000_000_000 }]],
     throws: [["a\tb"]],
   },
+  // Only a blank name, a bad Max-Age or an unreadable Expires throws.
+  buildSetCookie: {
+    returns: [[{ name: "sid", value: "1", domain: "", path: "", lifetime: "session", maxAge: "", expires: "", secure: false, httpOnly: false, partitioned: false, sameSite: "", priority: "" }, { nowMs: 1_800_000_000_000 }]],
+    throws: [[{ ...{ name: "sid", value: "1", domain: "", path: "", lifetime: "session", maxAge: "", expires: "", secure: false, httpOnly: false, partitioned: false, sameSite: "", priority: "" }, name: " " }]],
+  },
+  // Pure field copying over a ParsedCookie; there is no throw statement.
+  formFromCookie: {
+    returns: [[{ name: "sid", value: "1", bytes: 5, attributes: null, lifetime: null, valueInfo: { kind: "plain", decoded: null, layers: [], quoted: false }, audit: [], source: { line: 1, raw: "sid=1" } }]],
+    throws: "never",
+  },
 };
