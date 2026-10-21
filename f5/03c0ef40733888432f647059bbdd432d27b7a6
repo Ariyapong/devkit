@@ -1,0 +1,23 @@
+CHANGELOG.md
+  s_497dfabe7bcdaa::t_228a831e321fe2 7-21,24-29
+README.md
+  s_497dfabe7bcdaa::t_45edb28e14ad2a 3,21,29-30,118,124,130-135
+scripts/consumer/consumer.ts
+  s_497dfabe7bcdaa::t_e5749563fe93f3 7,12
+---
+{
+  "schema_version": "authorship/3.0.0",
+  "git_ai_version": "1.7.3",
+  "base_commit_sha": "f503c0ef40733888432f647059bbdd432d27b7a6",
+  "prompts": {},
+  "sessions": {
+    "s_497dfabe7bcdaa": {
+      "agent_id": {
+        "tool": "claude",
+        "id": "62d60e33-6a8f-4555-b442-c941ed1c43b9",
+        "model": "claude-fable-5-1"
+      },
+      "human_author": "Ariyapong Wimolnoch <ariyapong33@gmail.com>"
+    }
+  }
+}
